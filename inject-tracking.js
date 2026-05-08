@@ -107,11 +107,11 @@ function buildHelper(cfg) {
     if (!kind) return;
     var label = (el.textContent || '').trim().slice(0, 100);
     if (kind === 'matricular') {
-      track('click_matricular', {cta_text: label});
-      trackPixel('InitiateCheckout', {content_name: label});
+      track('begin_checkout', {cta_text: label, currency: 'BRL', value: 1499});
+      trackPixel('InitiateCheckout', {content_name: label, currency: 'BRL', value: 1499});
       trackGoogleAdsConversion();
     } else if (kind === 'consultor_open') {
-      track('click_consultor', {cta_text: label});
+      track('generate_lead', {cta_text: label});
       trackPixel('Lead', {content_name: 'consultor_open'});
     }
   }, true);
@@ -121,7 +121,7 @@ function buildHelper(cfg) {
     if (!f) return;
     var isLead = f.id === 'lead-form-cowork-code' || (f.querySelector && f.querySelector('.modal__submit'));
     if (isLead) {
-      track('form_submit_consultor');
+      track('qualify_lead');
       trackPixel('Lead', {content_name: 'consultor_form_submit'});
       trackGoogleAdsConversion();
     }

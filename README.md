@@ -31,14 +31,16 @@ git push origin main
 
 ### Eventos disparados
 
-Capturados via event delegation. Cada evento vai para `dataLayer` + `gtag('event')` + `fbq('track')`:
+Eventos seguem o template **"Gerar leads online"** do GA4. Cada evento vai para `dataLayer` + `gtag('event')` + `fbq('track')`:
 
-| Evento (GA4)             | Trigger                                                  | Meta Pixel              |
-|--------------------------|----------------------------------------------------------|-------------------------|
-| `click_matricular`       | Click em CTAs `.btn--primary`, `.btn--white`, `.bar__cta` (textos "matricular", "garantir vaga") | `InitiateCheckout`      |
-| `click_consultor`        | Click em `.btn--ghost` ("Falar com um consultor")        | `Lead` (`consultor_open`) |
-| `form_submit_consultor`  | Submit do form modal `.modal__submit`                    | `Lead` (`consultor_form_submit`) |
-| `page_view` (auto)       | gtag.js `config`                                          | `PageView`              |
+| Evento (GA4)         | Trigger                                                  | Meta Pixel               | Estágio funil           |
+|----------------------|----------------------------------------------------------|--------------------------|-------------------------|
+| `begin_checkout`     | Click em CTAs `.btn--primary`, `.btn--white`, `.bar__cta` (textos "matricular", "garantir vaga") | `InitiateCheckout` (BRL 1499) | Intenção de compra      |
+| `generate_lead`      | Click em `.btn--ghost` ("Falar com um consultor")        | `Lead` (consultor_open)  | Interesse               |
+| `qualify_lead` ⭐    | Submit do form modal `.modal__submit`                    | `Lead` (form_submit)     | Lead qualificado        |
+| `page_view` (auto)   | gtag.js `config`                                         | `PageView`               | Visita                  |
+| `close_convert_lead` ⭐ | (offline/CRM — disparado quando vendedor fecha venda)  | (offline)                | Conversão fechada       |
+| `purchase`           | (na página de obrigado do checkout final, fora desta LP) | `Purchase`               | Pagamento concluído     |
 
 ### UTMs
 
@@ -47,9 +49,9 @@ Captura automática de `utm_source`, `utm_medium`, `utm_campaign`, `utm_content`
 ### Configuração no GA4
 
 1. Acesse [analytics.google.com](https://analytics.google.com) → Admin → Eventos
-2. Marque `click_matricular`, `click_consultor`, `form_submit_consultor` como **conversões**
-3. Em Dimensões personalizadas, registre `utm_source`, `utm_medium`, `utm_campaign`, `cta_text`, `gclid`, `fbclid`
-4. Para Google Ads: vincule a property GA4 → Google Ads e importe as conversões
+2. Marque `generate_lead` e `begin_checkout` como **conversões** (a estrela ⭐). `qualify_lead` e `close_convert_lead` já vêm marcados pelo template.
+3. Em Dimensões personalizadas, registre `utm_source`, `utm_medium`, `utm_campaign`, `utm_content`, `utm_term`, `cta_text`, `gclid`, `fbclid`
+4. Para Google Ads: vincule a property GA4 → Google Ads e importe as conversões `begin_checkout` e `qualify_lead`
 
 ### Configuração no Meta Pixel
 
