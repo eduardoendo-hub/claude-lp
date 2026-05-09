@@ -230,19 +230,24 @@ function buildExtrasBlock(c) {
     }, false);  /* false = bubble; deixa o tracking original (capture) rodar antes */
   }
 
+  function safe(fn){ try { fn(); } catch(err){ console.warn('[lp-extras]', err); } }
   function applyAll(){
-    injectStickyCTA();
-    injectWaBubble();
-    hijackLeadForm();
+    safe(injectStickyCTA);
+    safe(injectWaBubble);
+    safe(hijackLeadForm);
   }
-  notifyWhatsAppClickToIris();
-  applyAll();
-
-  // React/bundler pode re-renderizar; observa mudanças e re-aplica os hooks
-  // dos elementos dinâmicos (form/sticky/bubble são adicionados ao body).
-  if (window.MutationObserver) {
-    var obs = new MutationObserver(function(){ applyAll(); });
-    obs.observe(document.body, { childList: true, subtree: true });
+  function start(){
+    safe(notifyWhatsAppClickToIris);
+    applyAll();
+    if (window.MutationObserver && document.body) {
+      var obs = new MutationObserver(function(){ applyAll(); });
+      obs.observe(document.body, { childList: true, subtree: true });
+    }
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', start);
+  } else {
+    start();
   }
 })();`.trim();
 
