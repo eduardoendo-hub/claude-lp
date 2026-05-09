@@ -107,6 +107,12 @@ function buildExtrasBlock(c) {
   position: absolute; top: 2px; right: 4px; cursor: pointer; padding: 0;
   width: 18px; height: 18px; line-height: 1;
 }
+/* Suprime o "[bundle] error" — falso positivo do error sink do bundler do
+   Claude que captura, em capture phase, qualquer erro de loading de asset
+   externo. Em produção dispara por causa de 503 do facebook.com/privacy_sandbox
+   e google-analytics.com/g/collect (anti-tracking dos próprios servidores
+   Meta/GA, comum em modo anônimo). A página funciona normalmente. */
+#__bundler_err { display: none !important; }
 @media (min-width: 768px) {
   .lp-sticky-cta { display: none; }
 }`.trim();
@@ -231,7 +237,12 @@ function buildExtrasBlock(c) {
   }
 
   function safe(fn){ try { fn(); } catch(err){ console.warn('[lp-extras]', err); } }
+  function suppressBundleErrSink(){
+    var d = document.getElementById('__bundler_err');
+    if (d) d.style.display = 'none';
+  }
   function applyAll(){
+    safe(suppressBundleErrSink);
     safe(injectStickyCTA);
     safe(injectWaBubble);
     safe(hijackLeadForm);
