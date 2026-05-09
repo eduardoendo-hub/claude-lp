@@ -3,5 +3,13 @@
   "meta_pixel_id": "2233020050842609",
   "google_ads_conversion_id": null,
   "google_ads_conversion_label": null,
-  "remove_gtm_id": "GTM-MS25H9LK"
+  "remove_gtm_id": "GTM-MS25H9LK",
+
+  "checkout_url": "https://impacta.site.engaged.com.br/p/checkout/x68jpj7w3k",
+  "integracao_rd_url": "https://rd.impacta.com.br",
+  "campaign_slug": "claude-pro-maio-2026",
+  "bonus_remaining": 20,
+  "horario_aulas": "19h–20h (Brasília)",
+  "ticket_price": 1499,
+  "whatsapp_tooltip": "Tira sua dúvida em 2 min"
 }
