@@ -113,6 +113,138 @@ function buildExtrasBlock(c) {
    e google-analytics.com/g/collect (anti-tracking dos próprios servidores
    Meta/GA, comum em modo anônimo). A página funciona normalmente. */
 #__bundler_err { display: none !important; }
+
+/* ===== Authority Split (Impacta + Olhar Digital) ===== */
+.lp-auth-split {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  margin: 8px 0 0;
+}
+.lp-auth-card {
+  position: relative;
+  background: rgba(247,241,232,0.04);
+  border: 1px solid rgba(247,241,232,0.10);
+  border-radius: 16px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  transition: border-color .2s, transform .2s;
+}
+.lp-auth-card:hover { border-color: rgba(217,119,87,0.35); transform: translateY(-2px); }
+.lp-auth-card::before {
+  content: '';
+  position: absolute; top: 0; left: 24px; right: 24px;
+  height: 2px; border-radius: 2px;
+  background: linear-gradient(90deg, transparent, #D97757 50%, transparent);
+  opacity: 0.6;
+}
+.lp-auth-card--olhar::before { background: linear-gradient(90deg, transparent, #073a1a 30%, #0e6b2e 60%, transparent); }
+.lp-auth-card__head { display: flex; flex-direction: column; gap: 4px; }
+.lp-auth-card__brand {
+  font: 800 13px/1 'JetBrains Mono', ui-monospace, monospace;
+  letter-spacing: 0.2em;
+  color: #D97757;
+}
+.lp-auth-card--olhar .lp-auth-card__brand { color: #4ce67c; }
+.lp-auth-card__sub {
+  font-size: 12px;
+  color: rgba(247,241,232,0.5);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.lp-auth-card__big {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  border-bottom: 1px solid rgba(247,241,232,0.08);
+  padding-bottom: 18px;
+}
+.lp-auth-card__big b {
+  font: italic 700 56px/0.95 'Cormorant Garamond', Georgia, serif;
+  color: #F7F1E8;
+  letter-spacing: -0.02em;
+}
+.lp-auth-card__big b i { font-style: normal; color: #D97757; font-size: 0.6em; vertical-align: top; padding-left: 2px; }
+.lp-auth-card--olhar .lp-auth-card__big b i { color: #4ce67c; }
+.lp-auth-card__big span {
+  font-size: 13px;
+  color: rgba(247,241,232,0.75);
+  line-height: 1.4;
+  flex: 1;
+}
+.lp-auth-card__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.lp-auth-card__list li {
+  position: relative;
+  padding-left: 24px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: rgba(247,241,232,0.85);
+}
+.lp-auth-card__list li b { color: #F7F1E8; font-weight: 700; }
+.lp-auth-card__list li::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 6px;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: rgba(217,119,87,0.15);
+  border: 1.5px solid #D97757;
+}
+.lp-auth-card--olhar .lp-auth-card__list li::before {
+  background: rgba(76,230,124,0.12);
+  border-color: #4ce67c;
+}
+.lp-auth-card__list li::after {
+  content: '';
+  position: absolute;
+  left: 4px; top: 9px;
+  width: 5px; height: 8px;
+  border-right: 2px solid #D97757;
+  border-bottom: 2px solid #D97757;
+  transform: rotate(45deg);
+}
+.lp-auth-card--olhar .lp-auth-card__list li::after {
+  border-color: #4ce67c;
+}
+.lp-auth-card__metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid rgba(247,241,232,0.08);
+}
+.lp-auth-card--olhar .lp-auth-card__metrics { grid-template-columns: repeat(2, 1fr); }
+.lp-auth-card__metrics > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.lp-auth-card__metrics b {
+  font: 800 22px/1 'Inter', -apple-system, sans-serif;
+  color: #F7F1E8;
+}
+.lp-auth-card__metrics span {
+  font-size: 10.5px;
+  color: rgba(247,241,232,0.55);
+  line-height: 1.3;
+  letter-spacing: 0.02em;
+}
+@media (max-width: 768px) {
+  .lp-auth-split { grid-template-columns: 1fr; gap: 16px; }
+  .lp-auth-card { padding: 22px; }
+  .lp-auth-card__big b { font-size: 44px; }
+  .lp-sticky-cta { display: flex; }
+}
 @media (min-width: 768px) {
   .lp-sticky-cta { display: none; }
 }`.trim();
@@ -351,6 +483,70 @@ function injectHeroSchedule(template, horario) {
   return out;
 }
 
+// ─── 3d. Substitui o bloco .auth__nums por 2 cards (Impacta + Olhar Digital) ─
+function injectAuthoritySplit(template) {
+  var html = ''
+    + '<div data-lp-extras="authority-split" class="lp-auth-split">'
+      // CARD IMPACTA
+      + '<div class="lp-auth-card lp-auth-card--impacta">'
+        + '<div class="lp-auth-card__head">'
+          + '<div class="lp-auth-card__brand">IMPACTA</div>'
+          + '<div class="lp-auth-card__sub">Escola de Tecnologia</div>'
+        + '</div>'
+        + '<div class="lp-auth-card__big">'
+          + '<b>35<i>+</i></b>'
+          + '<span>anos formando profissionais de tecnologia no Brasil</span>'
+        + '</div>'
+        + '<ul class="lp-auth-card__list">'
+          + '<li>Maior escola de tecnologia, gestão e design do Brasil</li>'
+          + '<li>Metodologia de ensino e certificação exclusivas</li>'
+          + '<li>Eleita <b>10×</b> o melhor fornecedor de RH</li>'
+        + '</ul>'
+        + '<div class="lp-auth-card__metrics">'
+          + '<div><b>100%</b><span>professores atuantes no mercado</span></div>'
+          + '<div><b>90%</b><span>alunos empregados</span></div>'
+          + '<div><b>2M</b><span>alunos formados</span></div>'
+        + '</div>'
+      + '</div>'
+      // CARD OLHAR DIGITAL
+      + '<div class="lp-auth-card lp-auth-card--olhar">'
+        + '<div class="lp-auth-card__head">'
+          + '<div class="lp-auth-card__brand">OLHAR DIGITAL</div>'
+          + '<div class="lp-auth-card__sub">Mídia &amp; Comunidade Tech</div>'
+        + '</div>'
+        + '<div class="lp-auth-card__big">'
+          + '<b>1M<i>+</i></b>'
+          + '<span>leitores mensais — comunidade tech do Brasil</span>'
+        + '</div>'
+        + '<ul class="lp-auth-card__list">'
+          + '<li>Maior portal de tecnologia do Brasil</li>'
+          + '<li>Conteúdo de referência do mundo de tecnologia</li>'
+          + '<li>Comunidade ativa e engajada com IA, dev e produto</li>'
+        + '</ul>'
+        + '<div class="lp-auth-card__metrics">'
+          + '<div><b>365</b><span>dias por ano cobrindo tech</span></div>'
+          + '<div><b>20+</b><span>anos de história editorial</span></div>'
+        + '</div>'
+      + '</div>'
+    + '</div>'
+    + '<!-- LP-AUTH-END -->';
+
+  // Idempotente: 3 caminhos
+  // 1) Se ja existe nossa versao, substitui pela versao mais nova (atualiza o conteudo)
+  // 2) Se ainda existe a div .auth__nums original, substitui por nossa versao
+  // 3) Se nenhuma das duas existe, nao faz nada (markup mudou)
+  var ourRe  = /<div[^>]*data-lp-extras="authority-split"[\s\S]*?<!-- LP-AUTH-END -->/;
+  var authRe = /<div class="auth__nums[^"]*"[^>]*>(?:\s*<div class="auth__num"[^>]*>[\s\S]*?<\/div>){2,8}\s*<\/div>/;
+
+  if (ourRe.test(template)) {
+    return template.replace(ourRe, html);
+  }
+  if (authRe.test(template)) {
+    return template.replace(authRe, html);
+  }
+  return template;
+}
+
 // ─── 3c. Adiciona pergunta "Em que horário?" no FAQ ────────────────────────
 function injectFaqSchedule(template, horario) {
   var stripRe = /<details[^>]*data-lp-extras="faq-schedule"[\s\S]*?<\/details>/g;
@@ -394,6 +590,7 @@ function process(html, c) {
   template = injectProBadges(template);
   template = injectHeroSchedule(template, c.horario_aulas);
   template = injectFaqSchedule(template, c.horario_aulas);
+  template = injectAuthoritySplit(template);
 
   // Insere bloco LP-EXTRAS antes de </head>
   var block = buildExtrasBlock(c);
