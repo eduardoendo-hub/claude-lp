@@ -521,6 +521,27 @@ iframe[src*="megasac"],
           { value: 0, currency: 'BRL', extra: { content_name: 'Curso Claude Pro' } },
           { email: emailVal, phone: phoneVal, first_name: nameVal }
         );
+        // Google Enhanced Conversions for Leads: passa email/phone em TEXTO
+        // PURO no evento gtag — o Google Ads tag faz o hash automatico quando
+        // Enhanced Conversions estiver habilitado no UI (Tools > Conversions).
+        // Sem isso, mesmo a feature ativada no UI nao consegue fazer match.
+        if (window.gtag && (emailVal || phoneVal)) {
+          try {
+            gtag('event', 'qualify_lead_enhanced', {
+              currency: 'BRL', value: 1499,
+              user_data: {
+                email_address: emailVal || undefined,
+                phone_number:  phoneVal || undefined,
+                address: nameVal ? { first_name: nameVal.split(' ')[0] } : undefined,
+              },
+            });
+            // Marca o user para futuras conversoes da mesma sessao (purchase no Engaged)
+            gtag('set', 'user_data', {
+              email: emailVal || undefined,
+              phone_number: phoneVal || undefined,
+            });
+          } catch(e){ console.warn('[lp-extras] enhanced gtag failed', e); }
+        }
         var blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
         var sent = false;
         if (navigator.sendBeacon) {
