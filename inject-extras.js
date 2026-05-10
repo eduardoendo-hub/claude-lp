@@ -565,21 +565,34 @@ iframe[src*="megasac"],
             });
           } catch(e){ console.warn('[lp-extras] enhanced gtag failed', e); }
         }
-        var blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
-        var sent = false;
-        if (navigator.sendBeacon) {
-          sent = navigator.sendBeacon(INTEGRACAO_RD_URL + '/api/leads', blob);
-        }
-        if (!sent) {
-          // Fallback: fetch fire-and-forget com keepalive
+        // Defesa em profundidade: dispara TANTO fetch keepalive QUANTO sendBeacon.
+        // Ambos sao fire-and-forget. Garante entrega mesmo se um for cancelado
+        // por unload/replace do bundle React. fetch keepalive aparece no Network
+        // tab e logs do servidor; sendBeacon e' silencioso mas resiliente.
+        var fetchOk = false;
+        try {
           fetch(INTEGRACAO_RD_URL + '/api/leads', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data),
             keepalive: true,
-          }).catch(function(){});
+            mode: 'cors',
+            credentials: 'omit',
+          }).then(function(r){
+            console.log('[lp-extras] lead via fetch — status', r.status);
+          }).catch(function(err){
+            console.warn('[lp-extras] fetch fail (sendBeacon ainda pode ter ido):', err.message);
+          });
+          fetchOk = true;
+        } catch(e){ console.warn('[lp-extras] fetch threw', e); }
+        var beaconOk = false;
+        if (navigator.sendBeacon) {
+          try {
+            var blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+            beaconOk = navigator.sendBeacon(INTEGRACAO_RD_URL + '/api/leads', blob);
+          } catch(e){}
         }
-        console.log('[lp-extras] lead enviado a integracao-rd (beacon=' + sent + ')');
+        console.log('[lp-extras] lead disparado (fetch=' + fetchOk + ' beacon=' + beaconOk + ')');
       } catch (err) {
         console.error('[lp-extras] erro ao preparar lead', err);
       }
