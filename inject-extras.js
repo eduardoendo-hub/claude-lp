@@ -721,10 +721,7 @@ function injectAuthoritySplit(template) {
       // claude-lp (mesmo diretorio do Dockerfile). nginx serve estaticos.
       + '<div class="lp-auth-card lp-auth-card--olhar">'
         + '<div class="lp-auth-card__head">'
-          + '<img src="/logo-olhar-digital.png" alt="Olhar Digital" class="lp-auth-card__logo" '
-            + 'onerror="this.style.display=\'none\'; var s=document.createElement(\'span\'); '
-            + 's.innerHTML=\'<span style=\\\'font:900 28px Inter; color:#F7F1E8; letter-spacing:-0.5px\\\'>OLHAR</span><span style=\\\'font:300 28px Inter; color:#4ce67c; margin-left:6px\\\'>DIGITAL</span>\'; '
-            + 'this.parentNode.insertBefore(s, this);">'
+          + '<img src="/logo-olhar-digital.webp" alt="Olhar Digital" class="lp-auth-card__logo">'
           + '<div class="lp-auth-card__sub">Mídia &amp; Comunidade Tech · 1M+ leitores</div>'
         + '</div>'
         + '<div class="lp-auth-card__big">'
