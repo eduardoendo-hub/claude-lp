@@ -41,6 +41,8 @@ const BADGE_ATTR = 'data-lp-extras="probadge"';
 function buildExtrasBlock(c) {
   const checkout       = c.checkout_url;
   const integracaoRd   = c.integracao_rd_url;
+  const irisUrl        = c.iris_url || 'https://iris.technowhub.ai';
+  const productSlug    = c.product_slug || 'claude-pro';
   const campaign       = c.campaign_slug;
   const bonus          = Number(c.bonus_remaining) || 20;
   const horario        = c.horario_aulas || '19h–22h (Brasília)';
@@ -351,6 +353,8 @@ iframe[src*="megasac"],
 (function(){
   var CHECKOUT_URL      = ${JSON.stringify(checkout)};
   var INTEGRACAO_RD_URL = ${JSON.stringify(integracaoRd)};
+  var IRIS_URL          = ${JSON.stringify(irisUrl)};
+  var PRODUCT_SLUG      = ${JSON.stringify(productSlug)};
   var CAMPAIGN_SLUG     = ${JSON.stringify(campaign)};
   var BONUS_REMAINING   = ${bonus};
   var HORARIO           = ${JSON.stringify(horario)};
@@ -628,6 +632,41 @@ iframe[src*="megasac"],
       de um template literal externo e qualquer crase ou interpolacao
       quebra o parser.)
   */
+  /* pushToIris — empurra evento direto pro cockpit IRIS em real-time
+     (Plano C: substitui ingest GA4 Data API). Fire-and-forget via
+     sendBeacon (preferred) ou fetch keepalive (fallback). */
+  function pushToIris(eventName, params){
+    if (!IRIS_URL) return;
+    try {
+      var payload = JSON.stringify({
+        product_slug: PRODUCT_SLUG,
+        event_name: eventName,
+        campaign_slug: (params && params.campaign_slug) || CAMPAIGN_SLUG,
+        page_url: (params && params.page_url) || window.location.pathname,
+        value: (params && params.value) || null,
+        currency: (params && params.currency) || null,
+        ts: new Date().toISOString()
+      });
+      var url = IRIS_URL + '/api/events';
+      var sent = false;
+      if (navigator.sendBeacon) {
+        try {
+          var blob = new Blob([payload], { type: 'application/json' });
+          sent = navigator.sendBeacon(url, blob);
+        } catch(e){}
+      }
+      if (!sent) {
+        fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: payload,
+          keepalive: true,
+          mode: 'cors'
+        }).catch(function(){ /* fire-and-forget */ });
+      }
+    } catch(err){}
+  }
+
   function setupGA4Events(){
     if (document.__ga4EventsBound) return;
     document.__ga4EventsBound = true;
@@ -673,6 +712,8 @@ iframe[src*="megasac"],
       if (eventName && window.dataLayer) {
         try { window.dataLayer.push(Object.assign({event: eventName}, params)); } catch(err){}
       }
+      /* Plano C: empurra direto pro IRIS em paralelo ao GA4 */
+      if (eventName) pushToIris(eventName, params);
     }, true); /* capture phase: roda antes de outros handlers */
     /* Page view explicito com produto/campanha — facilita filtro no GA4 */
     if (window.gtag) {
@@ -683,6 +724,11 @@ iframe[src*="megasac"],
         });
       } catch(err){}
     }
+    /* Plano C: tambem manda lp_view pro IRIS no load (visitas LP) */
+    pushToIris('lp_view', {
+      campaign_slug: CAMPAIGN_SLUG,
+      page_url: window.location.pathname
+    });
   }
 
   function safe(fn){ try { fn(); } catch(err){ console.warn('[lp-extras]', err); } }
