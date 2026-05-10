@@ -215,10 +215,13 @@ function buildExtrasBlock(c) {
       // Limpa msgs anteriores
       form.querySelectorAll('.lp-form-msg').forEach(function(n){ n.remove(); });
       try {
+        // keepalive: true garante que o request nao seja cancelado se o
+        // bundle original do Claude navegar / substituir o form apos o submit.
         var r = await fetch(INTEGRACAO_RD_URL + '/api/leads', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data),
+          keepalive: true,
         });
         if (!r.ok) throw new Error('integracao-rd ' + r.status);
         var ok = document.createElement('div');
