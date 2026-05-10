@@ -525,6 +525,20 @@ iframe[src*="megasac"],
           source_page: window.location.href,
           extra:   { course: fd.get('course') || '' },
         };
+        // Bloqueia o handler nativo do bundle (que tem captureLead mock + fetch
+        // pra endpoint que falha, gerando mensagem visual de erro falsa).
+        // Nosso sendBeacon JA enviou o Lead — eh seguro impedir o resto.
+        e.preventDefault();
+        e.stopPropagation();
+        // Mostra mensagem de sucesso propria
+        try {
+          form.querySelectorAll('.lp-form-msg').forEach(function(n){ n.remove(); });
+          var ok = document.createElement('div');
+          ok.className = 'lp-form-msg ok';
+          ok.textContent = '✓ Recebemos seu contato. Em breve um consultor falará com você no horário comercial.';
+          form.appendChild(ok);
+          setTimeout(function(){ try { form.reset(); } catch(_){} }, 100);
+        } catch(_) {}
         // Pixel CAPI: dispara evento Lead com email/phone hashed server-side
         fireCAPIEvent('Lead',
           { value: 0, currency: 'BRL', extra: { content_name: 'Curso Claude Pro' } },
