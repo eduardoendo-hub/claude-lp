@@ -634,7 +634,9 @@ iframe[src*="megasac"],
   */
   /* pushToIris — empurra evento direto pro cockpit IRIS em real-time
      (Plano C: substitui ingest GA4 Data API). Fire-and-forget via
-     sendBeacon (preferred) ou fetch keepalive (fallback). */
+     fetch keepalive — sobrevive ao unload da pagina igual sendBeacon
+     mas usa CORS com preflight padrao (Coolify/Traefik recusam o
+     formato Blob do sendBeacon retornando 503). */
   function pushToIris(eventName, params){
     if (!IRIS_URL) return;
     try {
@@ -647,23 +649,14 @@ iframe[src*="megasac"],
         currency: (params && params.currency) || null,
         ts: new Date().toISOString()
       });
-      var url = IRIS_URL + '/api/events';
-      var sent = false;
-      if (navigator.sendBeacon) {
-        try {
-          var blob = new Blob([payload], { type: 'application/json' });
-          sent = navigator.sendBeacon(url, blob);
-        } catch(e){}
-      }
-      if (!sent) {
-        fetch(url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: payload,
-          keepalive: true,
-          mode: 'cors'
-        }).catch(function(){ /* fire-and-forget */ });
-      }
+      fetch(IRIS_URL + '/api/events', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: payload,
+        keepalive: true,
+        mode: 'cors',
+        credentials: 'omit'
+      }).catch(function(){ /* fire-and-forget */ });
     } catch(err){}
   }
 
