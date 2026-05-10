@@ -200,14 +200,34 @@ function buildExtrasBlock(c) {
     var form = document.getElementById('leadForm');
     if (!form || form.dataset.lpHijacked) return;
     form.dataset.lpHijacked = '1';
+
+    // Validacao obrigatoria via HTML5: o form do bundle tem novalidate=""
+    // que desabilita a validacao nativa. Removemos para garantir que name,
+    // email e phone (que ja tem required) bloqueiem submit vazio. Tambem
+    // forcamos required nos 3 caso o bundle os tenha removido.
+    form.removeAttribute('novalidate');
+    ['name', 'email', 'phone'].forEach(function(n){
+      var el = form.querySelector('[name="' + n + '"]');
+      if (el && !el.hasAttribute('required')) el.setAttribute('required', '');
+    });
+
     // Capture phase + sendBeacon: o bundle original do Claude substitui o
     // innerHTML do form logo apos o submit (mostra tela de sucesso interna),
     // o que cancelava qualquer fetch async em flight (Failed to fetch). Usamos
     // sendBeacon — projetado para POST garantido durante unload/replace.
     // Tradeoff: nao temos resposta do servidor; o servidor ja loga o resultado
     // e o Lead aparece no RD CRM em <2s. A tela de sucesso do bundle continua
-    // aparecendo normalmente (nao chamamos preventDefault).
+    // aparecendo normalmente (nao chamamos preventDefault em caso de sucesso).
     form.addEventListener('submit', function(e){
+      // Bloqueia envio se algum campo obrigatorio estiver vazio/invalido.
+      // O browser mostra a mensagem nativa ("Preencha este campo") e o
+      // tracking original tambem nao dispara qualify_lead.
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
       try {
         var fd = new FormData(form);
         var data = {
@@ -215,6 +235,7 @@ function buildExtrasBlock(c) {
           name:    (fd.get('name')  || '').trim(),
           email:   (fd.get('email') || '').trim(),
           phone:   (fd.get('phone') || '').trim(),
+          channel: 'form',                 // origem: form submit "Falar com especialista"
           utm:     utms(),
           source_page: window.location.href,
           extra:   { course: fd.get('course') || '' },
