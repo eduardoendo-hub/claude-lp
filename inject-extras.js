@@ -350,6 +350,59 @@ iframe[src*="megasac"],
 
   function utms(){ try { return (window.__lp_utms || {}); } catch(e){ return {}; } }
 
+  // ─── Helpers para Pixel CAPI dedup ─────────────────────────────────────
+  function uuid(){
+    try { if (window.crypto && crypto.randomUUID) return crypto.randomUUID(); } catch(e){}
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c){
+      var r = Math.random()*16|0, v = c==='x' ? r : (r&0x3|0x8);
+      return v.toString(16);
+    });
+  }
+  function getCookie(name){
+    var v = document.cookie.match('(^|;)\\s*' + name + '=([^;]*)');
+    return v ? decodeURIComponent(v[2]) : null;
+  }
+  /**
+   * Dispara um evento Pixel client-side + envia para integracao-rd /api/pixel/event
+   * com o MESMO event_id, para o Meta deduplicar entre browser e servidor.
+   * iOS 14+/Brave/Firefox cortam ~30-50% do tracking client-side; CAPI recupera.
+   */
+  function fireCAPIEvent(eventName, params, userData){
+    params   = params   || {};
+    userData = userData || {};
+    var eid = uuid();
+    // Client-side (Pixel)
+    if (window.fbq) {
+      try { fbq('track', eventName, params, { eventID: eid }); } catch(e){}
+    }
+    // Server-side via integracao-rd
+    try {
+      var body = {
+        event_name: eventName,
+        event_id:   eid,
+        event_source_url: window.location.href,
+        fbc:        getCookie('_fbc'),
+        fbp:        getCookie('_fbp'),
+        value:      params.value,
+        currency:   params.currency || 'BRL',
+        email:      userData.email || null,
+        phone:      userData.phone || null,
+        first_name: userData.first_name || null,
+        extra:      params.extra || null,
+      };
+      var blob = new Blob([JSON.stringify(body)], { type: 'application/json' });
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon(INTEGRACAO_RD_URL + '/api/pixel/event', blob);
+      } else {
+        fetch(INTEGRACAO_RD_URL + '/api/pixel/event', {
+          method: 'POST', headers: {'Content-Type':'application/json'},
+          body: JSON.stringify(body), keepalive: true,
+        }).catch(function(){});
+      }
+    } catch(e){ console.warn('[lp-extras] CAPI fire failed', e); }
+    return eid;
+  }
+
   function injectStickyCTA(){
     if (document.querySelector('.lp-sticky-cta')) return;
     try { if (sessionStorage.getItem('lp-sticky-dismissed') === '1') return; } catch(e){}
@@ -368,7 +421,7 @@ iframe[src*="megasac"],
       try { sessionStorage.setItem('lp-sticky-dismissed', '1'); } catch(e){}
     });
     bar.querySelector('a').addEventListener('click', function(){
-      if (window.fbq)  { try { fbq('track', 'InitiateCheckout', { value: TICKET, currency: 'BRL' }); } catch(e){} }
+      fireCAPIEvent('InitiateCheckout', { value: TICKET, currency: 'BRL', extra: { placement: 'sticky' } });
       if (window.gtag) { try { gtag('event', 'begin_checkout', { value: TICKET, currency: 'BRL', cta_text: 'sticky' }); } catch(e){} }
     });
     setTimeout(function(){ bar.classList.add('visible'); }, 4000);
@@ -450,16 +503,24 @@ iframe[src*="megasac"],
       }
       try {
         var fd = new FormData(form);
+        var nameVal  = (fd.get('name')  || '').trim();
+        var emailVal = (fd.get('email') || '').trim();
+        var phoneVal = (fd.get('phone') || '').trim();
         var data = {
           campaign_slug: CAMPAIGN_SLUG,
-          name:    (fd.get('name')  || '').trim(),
-          email:   (fd.get('email') || '').trim(),
-          phone:   (fd.get('phone') || '').trim(),
+          name:    nameVal,
+          email:   emailVal,
+          phone:   phoneVal,
           channel: 'form',                 // origem: form submit "Falar com especialista"
           utm:     utms(),
           source_page: window.location.href,
           extra:   { course: fd.get('course') || '' },
         };
+        // Pixel CAPI: dispara evento Lead com email/phone hashed server-side
+        fireCAPIEvent('Lead',
+          { value: 0, currency: 'BRL', extra: { content_name: 'Curso Claude Pro' } },
+          { email: emailVal, phone: phoneVal, first_name: nameVal }
+        );
         var blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
         var sent = false;
         if (navigator.sendBeacon) {
@@ -501,7 +562,7 @@ iframe[src*="megasac"],
       document.body.appendChild(banner);
     }
     banner.querySelector('a').addEventListener('click', function(){
-      if (window.fbq)  { try { fbq('track', 'InitiateCheckout', { value: TICKET, currency: 'BRL' }); } catch(e){} }
+      fireCAPIEvent('InitiateCheckout', { value: TICKET, currency: 'BRL', extra: { placement: 'banner-topo' } });
       if (window.gtag) { try { gtag('event', 'begin_checkout', { value: TICKET, currency: 'BRL', cta_text: 'banner-topo' }); } catch(e){} }
     });
   }
