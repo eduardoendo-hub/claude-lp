@@ -39,14 +39,15 @@ const BADGE_ATTR = 'data-lp-extras="probadge"';
 
 // ─── 1. Bloco CSS+JS injetado antes do </head> ─────────────────────────────
 function buildExtrasBlock(c) {
-  const checkout      = c.checkout_url;
-  const integracaoRd  = c.integracao_rd_url;
-  const campaign      = c.campaign_slug;
-  const bonus         = Number(c.bonus_remaining) || 20;
-  const horario       = c.horario_aulas || '19h–20h (Brasília)';
-  const ticket        = Number(c.ticket_price) || 1499;
-  const waTooltip     = c.whatsapp_tooltip || 'Tira sua dúvida em 2 min';
-  const ticketBR      = ticket.toLocaleString('pt-BR');
+  const checkout       = c.checkout_url;
+  const integracaoRd   = c.integracao_rd_url;
+  const campaign       = c.campaign_slug;
+  const bonus          = Number(c.bonus_remaining) || 20;
+  const horario        = c.horario_aulas || '19h–22h (Brasília)';
+  const horarioAtend   = c.horario_atendimento || '9h–18h dias úteis · sábados 9h–13h';
+  const ticket         = Number(c.ticket_price) || 1499;
+  const waTooltip      = c.whatsapp_tooltip || 'Tira sua dúvida em 2 min';
+  const ticketBR       = ticket.toLocaleString('pt-BR');
 
   // CSS dos elementos novos
   const css = `
@@ -239,6 +240,93 @@ function buildExtrasBlock(c) {
   line-height: 1.3;
   letter-spacing: 0.02em;
 }
+/* ===== Logos nos cards de autoridade ===== */
+.lp-auth-card__logo {
+  height: 32px;
+  width: auto;
+  max-width: 180px;
+  object-fit: contain;
+  margin-bottom: 4px;
+}
+.lp-auth-card__logo--inline-svg {
+  display: inline-block;
+}
+
+/* ===== Banner topo do hero — bonus dos 20 primeiros ===== */
+.lp-top-banner {
+  position: relative;
+  z-index: 8800;
+  background: linear-gradient(90deg, rgba(217,119,87,0.18), rgba(217,119,87,0.08));
+  border-bottom: 1px solid rgba(217,119,87,0.35);
+  color: #F7F1E8;
+  padding: 10px 16px;
+  text-align: center;
+  font: 600 13px/1.4 'Inter', -apple-system, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.lp-top-banner b { color: #D97757; font-weight: 800; }
+.lp-top-banner__sep { opacity: 0.4; }
+.lp-top-banner a {
+  color: #0e0b08;
+  background: #D97757;
+  padding: 6px 12px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 12px;
+  white-space: nowrap;
+  transition: transform .15s;
+}
+.lp-top-banner a:hover { transform: translateY(-1px); }
+@media (max-width: 600px) {
+  .lp-top-banner { font-size: 11px; padding: 8px 12px; }
+  .lp-top-banner__sep { display: none; }
+  .lp-top-banner a { padding: 5px 10px; font-size: 11px; }
+}
+
+/* ===== cta-form-* rebaixado pra ghost (UX: hierarquia) =====
+   Mantém os botões "Falar com especialista" visíveis mas com peso
+   menor que os de matrícula — evita CTAs concorrentes (NN/g). */
+[data-track="cta-form-pricing"],
+[data-track="cta-form-final"] {
+  background: transparent !important;
+  color: rgba(247,241,232,0.7) !important;
+  border: 1px solid rgba(247,241,232,0.25) !important;
+  font-weight: 500 !important;
+  box-shadow: none !important;
+  font-size: 13px !important;
+  padding: 10px 16px !important;
+}
+[data-track="cta-form-pricing"]:hover,
+[data-track="cta-form-final"]:hover {
+  border-color: rgba(247,241,232,0.5) !important;
+  color: #F7F1E8 !important;
+  background: rgba(247,241,232,0.04) !important;
+}
+[data-track="cta-form-pricing"] .arrow,
+[data-track="cta-form-final"] .arrow {
+  opacity: 0.6;
+}
+
+/* ===== Tallos web chat OFF no lançamento =====
+   Tallos cria iframes/divs com IDs/classes variados. Match agressivo
+   pra cobrir todos. Reabilitar removendo este bloco. */
+iframe[src*="tallos"],
+iframe[src*="megasac"],
+[id^="tallos"],
+[id^="megasac"],
+[class*="tallos-chat"],
+.tallos-chat-widget,
+#tallos-widget,
+#tallos-chat {
+  display: none !important;
+  visibility: hidden !important;
+}
+
 @media (max-width: 768px) {
   .lp-auth-split { grid-template-columns: 1fr; gap: 16px; }
   .lp-auth-card { padding: 22px; }
@@ -398,11 +486,44 @@ function buildExtrasBlock(c) {
     var d = document.getElementById('__bundler_err');
     if (d) d.style.display = 'none';
   }
+  function injectTopBanner(){
+    if (document.querySelector('.lp-top-banner')) return;
+    try { if (sessionStorage.getItem('lp-top-banner-dismissed') === '1') return; } catch(e){}
+    var banner = document.createElement('div');
+    banner.className = 'lp-top-banner';
+    banner.innerHTML =
+      '<span>🎁 <b>Bônus</b> dos primeiros ' + BONUS_REMAINING + ' inscritos: <b>1h extra</b> em grupo com o instrutor</span>' +
+      '<span class="lp-top-banner__sep">·</span>' +
+      '<a href="' + CHECKOUT_URL + '" data-track="cta-buy-banner">Garantir minha vaga</a>';
+    if (document.body.firstChild) {
+      document.body.insertBefore(banner, document.body.firstChild);
+    } else {
+      document.body.appendChild(banner);
+    }
+    banner.querySelector('a').addEventListener('click', function(){
+      if (window.fbq)  { try { fbq('track', 'InitiateCheckout', { value: TICKET, currency: 'BRL' }); } catch(e){} }
+      if (window.gtag) { try { gtag('event', 'begin_checkout', { value: TICKET, currency: 'BRL', cta_text: 'banner-topo' }); } catch(e){} }
+    });
+  }
+  function disableTallos(){
+    // Esconder e remover qualquer iframe / div do Tallos que apareca.
+    // CSS ja faz display:none, mas alguns widgets re-adicionam dinamicamente.
+    var sels = [
+      'iframe[src*="tallos"]', 'iframe[src*="megasac"]',
+      '[id^="tallos"]', '[id^="megasac"]',
+      '[class*="tallos-chat"]', '#tallos-chat-widget'
+    ];
+    sels.forEach(function(s){
+      document.querySelectorAll(s).forEach(function(el){ try { el.remove(); } catch(e){ el.style.display='none'; } });
+    });
+  }
   function applyAll(){
     safe(suppressBundleErrSink);
+    safe(injectTopBanner);
     safe(injectStickyCTA);
     safe(injectWaBubble);
     safe(hijackLeadForm);
+    safe(disableTallos);
   }
   function start(){
     safe(notifyWhatsAppClickToIris);
@@ -490,8 +611,8 @@ function injectAuthoritySplit(template) {
       // CARD IMPACTA
       + '<div class="lp-auth-card lp-auth-card--impacta">'
         + '<div class="lp-auth-card__head">'
-          + '<div class="lp-auth-card__brand">IMPACTA</div>'
-          + '<div class="lp-auth-card__sub">Escola de Tecnologia</div>'
+          + '<img src="/logo-impacta.png" alt="Impacta Tecnologia" class="lp-auth-card__logo">'
+          + '<div class="lp-auth-card__sub">Escola de Tecnologia · 35+ anos</div>'
         + '</div>'
         + '<div class="lp-auth-card__big">'
           + '<b>35<i>+</i></b>'
@@ -509,10 +630,16 @@ function injectAuthoritySplit(template) {
         + '</div>'
       + '</div>'
       // CARD OLHAR DIGITAL
+      // TODO: substituir SVG inline pelo arquivo real quando disponivel.
+      // Hoje usa um lockup tipografico (nao oficial) por nao termos o
+      // SVG/PNG separado do Olhar Digital — soh o lockup combinado existia.
       + '<div class="lp-auth-card lp-auth-card--olhar">'
         + '<div class="lp-auth-card__head">'
-          + '<div class="lp-auth-card__brand">OLHAR DIGITAL</div>'
-          + '<div class="lp-auth-card__sub">Mídia &amp; Comunidade Tech</div>'
+          + '<svg viewBox="0 0 200 32" class="lp-auth-card__logo lp-auth-card__logo--inline-svg" aria-label="Olhar Digital" preserveAspectRatio="xMinYMid meet">'
+            + '<text x="0" y="24" font-family="Inter, -apple-system, sans-serif" font-size="22" font-weight="900" fill="#F7F1E8" letter-spacing="-0.5">OLHAR</text>'
+            + '<text x="92" y="24" font-family="Inter, -apple-system, sans-serif" font-size="22" font-weight="300" fill="#4ce67c" letter-spacing="0.5">DIGITAL</text>'
+          + '</svg>'
+          + '<div class="lp-auth-card__sub">Mídia &amp; Comunidade Tech · 1M+ leitores</div>'
         + '</div>'
         + '<div class="lp-auth-card__big">'
           + '<b>1M<i>+</i></b>'
@@ -547,31 +674,104 @@ function injectAuthoritySplit(template) {
   return template;
 }
 
-// ─── 3c. Adiciona pergunta "Em que horário?" no FAQ ────────────────────────
-function injectFaqSchedule(template, horario) {
-  var stripRe = /<details[^>]*data-lp-extras="faq-schedule"[\s\S]*?<\/details>/g;
+// ─── 3c. Adiciona/atualiza perguntas no FAQ ───────────────────────────────
+// Cobre: horario_aulas, horario_atendimento (substitui texto antigo de "1 dia
+// util"), aulas gravadas, NF para PJ.
+function injectFaqExtras(template, horarioAulas, horarioAtendimento) {
+  // Strip versoes anteriores (idempotente)
+  var stripRe = /<details[^>]*data-lp-extras="faq-(schedule|atendimento|gravadas|nfpj)"[\s\S]*?<\/details>/g;
   var out = template.replace(stripRe, '');
 
-  var qa =
-    '<details class="qa" data-lp-extras="faq-schedule">' +
-      '<summary>Em que horário acontecem as aulas?<span class="plus">+</span></summary>' +
-      '<div class="qa__body">' +
-        'As 5 aulas acontecem ao vivo das <strong>' + horario + '</strong>, em 5 noites consecutivas. ' +
-        'Toda aula é gravada e disponibilizada na comunidade para revisão sem prazo.' +
-      '</div>' +
-    '</details>';
+  // Atualiza textos pre-existentes do bundle: troca promessa "1 dia util"
+  // por "poucos minutos no horario comercial" ou similar, sem mudar a
+  // estrutura do FAQ original.
+  out = out.replace(
+    /respond[ea]?mos em at[eé]?\s*1\s*dia\s*[uú]til[^<]*/gi,
+    'respondemos em poucos minutos no horário comercial'
+  );
 
-  // Insere a nova pergunta como PRIMEIRA do FAQ (depois da abertura do .faq__list)
-  // ou logo após o último </details> antes do fechamento de .faq.
-  // Estratégia: inserir antes do </div> que fecha a div.faq, depois do último </details>.
+  var perguntas = [
+    {
+      id: 'faq-schedule',
+      summary: 'Em que horário acontecem as aulas?',
+      body: 'As 5 aulas acontecem ao vivo das <strong>' + horarioAulas + '</strong>, em 5 noites consecutivas. ' +
+            'Toda aula é gravada e disponibilizada na comunidade para revisão <strong>sem prazo</strong>.',
+    },
+    {
+      id: 'faq-atendimento',
+      summary: 'Em quanto tempo vocês respondem?',
+      body: 'Respondemos em <strong>poucos minutos no horário comercial</strong> ' +
+            '(' + horarioAtendimento + '). ' +
+            'Para atendimento mais rápido use o WhatsApp — fora do horário, ' +
+            'deixe sua mensagem que retornamos no próximo turno.',
+    },
+    {
+      id: 'faq-gravadas',
+      summary: 'E se eu não conseguir assistir ao vivo?',
+      body: 'Toda aula é gravada e disponibilizada na comunidade em até 2 horas após o término. ' +
+            '<strong>Sem prazo de expiração</strong> — você revisa quantas vezes quiser.',
+    },
+    {
+      id: 'faq-nfpj',
+      summary: 'Vocês emitem nota fiscal para empresas (PJ)?',
+      body: 'Sim. A nota fiscal é emitida pela <strong>Impacta Tecnologia</strong> ' +
+            'após confirmação da matrícula. Para condições corporativas (5+ vagas) ' +
+            'fale conosco pelo WhatsApp para tratar desconto e faturamento.',
+    },
+  ];
+  var qaHtml = perguntas.map(function (p) {
+    return '<details class="qa" data-lp-extras="' + p.id + '">' +
+             '<summary>' + p.summary + '<span class="plus">+</span></summary>' +
+             '<div class="qa__body">' + p.body + '</div>' +
+           '</details>';
+  }).join('');
+
+  // Insere todas no fim do FAQ (antes do </div> final do .faq)
   out = out.replace(
     /(<div class="faq">[\s\S]*?)(<\/details>\s*<\/div>)/,
     function (match, head, tail) {
-      if (head.indexOf('data-lp-extras="faq-schedule"') !== -1) return match;
-      return head + '</details>' + qa + tail.replace('</details>', '');
+      // Se ja foi inserido, nao duplica
+      if (head.indexOf('data-lp-extras="faq-atendimento"') !== -1) return match;
+      return head + '</details>' + qaHtml + tail.replace('</details>', '');
     }
   );
   return out;
+}
+
+// alias para compat com chamadas anteriores no process()
+function injectFaqSchedule(template, horarioAulas) {
+  return injectFaqExtras(template, horarioAulas, '9h–18h dias úteis · sábados 9h–13h');
+}
+
+// ─── 3e. Move a section que contem o bloco de autoridade para ANTES da
+// section #investimento. Reduz risco percebido antes do preco. ─────────────
+function moveAuthoritySection(template) {
+  // Acha a section que contem .auth__nums (original) ou data-lp-extras="authority-split"
+  // (nossa versao). Captura toda a tag <section>...</section>.
+  var sectionRe = /<section[^>]*>(?:(?!<\/section>)[\s\S])*?(?:auth__nums|data-lp-extras="authority-split")(?:(?!<\/section>)[\s\S])*?<\/section>/;
+  var m = template.match(sectionRe);
+  if (!m) return template;
+  var authoritySection = m[0];
+
+  // Acha a section #investimento
+  var investRe = /<section[^>]*id="investimento"[^>]*>/;
+  var im = template.match(investRe);
+  if (!im) return template;
+
+  // Verifica se ja esta na posicao correta (autoridade vem ANTES de investimento
+  // E sem outra section entre eles?). Se sim, nao mexe.
+  var idxAuth   = template.indexOf(authoritySection);
+  var idxInvest = template.indexOf(im[0]);
+  if (idxAuth < 0 || idxInvest < 0) return template;
+
+  // Verifica se ja esta IMEDIATAMENTE antes
+  var between = template.slice(idxAuth + authoritySection.length, idxInvest);
+  if (/^\s*$/.test(between)) return template;  // ja esta no lugar
+
+  // Remove do lugar atual
+  var withoutAuth = template.replace(authoritySection, '');
+  // Insere antes da section investimento
+  return withoutAuth.replace(im[0], authoritySection + im[0]);
 }
 
 // ─── 4. Wrapper: pega template JSON, modifica, salva ─────────────────────
@@ -589,8 +789,9 @@ function process(html, c) {
   template = fixCheckoutLinks(template, c.checkout_url);
   template = injectProBadges(template);
   template = injectHeroSchedule(template, c.horario_aulas);
-  template = injectFaqSchedule(template, c.horario_aulas);
+  template = injectFaqExtras(template, c.horario_aulas, c.horario_atendimento || '9h–18h dias úteis · sábados 9h–13h');
   template = injectAuthoritySplit(template);
+  template = moveAuthoritySection(template);
 
   // Insere bloco LP-EXTRAS antes de </head>
   var block = buildExtrasBlock(c);
