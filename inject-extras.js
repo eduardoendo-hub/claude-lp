@@ -614,16 +614,19 @@ iframe[src*="megasac"],
   /* ------------------------------------------------------------------
      GA4 — eventos padronizados pra alimentar o IRIS
      ------------------------------------------------------------------
-     A LP ja dispara `begin_checkout` (Pixel + GA4) em alguns CTAs
-     e `qualify_lead_enhanced` no submit do form. Aqui adicionamos os
+     A LP ja dispara begin_checkout (Pixel + GA4) em alguns CTAs e
+     qualify_lead_enhanced no submit do form. Aqui adicionamos os
      nomes amigaveis que o IRIS espera, via delegated listener unico:
 
-       data-track="cta-buy-*"  → click_compra      (botao Engaged)
-       data-track="cta-form-*" → click_consultor   (Falar com especialista)
-       data-track="float-wa"   → click_whats       (WhatsApp fab)
-       href*=wa.me / api.whatsapp → click_whats
+       data-track="cta-buy-*"  -> click_compra      (botao Engaged)
+       data-track="cta-form-*" -> click_consultor   (Falar com especialista)
+       data-track="float-wa"   -> click_whats       (WhatsApp fab)
+       href*=wa.me / api.whatsapp -> click_whats
 
      Idempotente — registra o listener uma so vez.
+     (Sem crases nem dollar-brace aqui — esse bloco eh montado dentro
+      de um template literal externo e qualquer crase ou interpolacao
+      quebra o parser.)
   */
   function setupGA4Events(){
     if (document.__ga4EventsBound) return;
