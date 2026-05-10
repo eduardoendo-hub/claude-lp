@@ -644,25 +644,21 @@ iframe[src*="megasac"],
         page_url: window.location.pathname
       };
       if (track.indexOf('cta-buy-') === 0) {
-        /* IMPORTANTE: alguns cta-buy-* sao apenas ancoras internas (href="#")
+        /* IMPORTANTE: alguns cta-buy-* sao apenas ancoras internas (href="#algo")
            que rolam pra outra secao — NAO sao intent de compra real.
            So conta como click_compra se o href aponta pra checkout externo
-           (engaged.com.br, hotmart, ou qualquer URL absoluta). */
+           (engaged.com.br, hotmart, ou qualquer URL absoluta). Ancoras internas
+           sao silenciosas — nada de evento, soh navegacao. */
         var isCheckoutLink = !!href && (
           /engaged\.com\.br/.test(href) ||
           /hotmart\.com/.test(href) ||
           /sympla\.com/.test(href) ||
           /^https?:\/\//i.test(href)
         );
-        if (!isCheckoutLink) {
-          /* Ancora interna — registra como navegacao em vez de intent de compra,
-             pra ainda dar visibilidade no GA4 sem inflar o KPI de Vendas. */
-          eventName = 'cta_anchor_scroll';
-        } else {
-          eventName = 'click_compra';
-          params.value = TICKET;
-          params.currency = 'BRL';
-        }
+        if (!isCheckoutLink) return; /* ancora interna — sem evento */
+        eventName = 'click_compra';
+        params.value = TICKET;
+        params.currency = 'BRL';
       } else if (track.indexOf('cta-form-') === 0) {
         eventName = 'click_consultor';
       } else if (track === 'float-wa' || /wa\.me|api\.whatsapp/.test(href)) {
