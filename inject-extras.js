@@ -296,6 +296,63 @@ function injectProBadges(template) {
   return out;
 }
 
+// ─── 3b. Adiciona bloco "Horário" no hero__meta (visível no hero) ──────────
+function injectHeroSchedule(template, horario) {
+  // Remove inserção anterior (idempotente)
+  var stripRe = /<div\s+data-lp-extras="hero-schedule"[\s\S]*?<\/div>\s*<\/div>/g;
+  var out = template.replace(stripRe, '');
+
+  // Item visual igual aos outros do hero__meta. Inserido logo após "ao vivo"
+  // (último div meta original).
+  var horaSplit = horario.replace(/\s*\([^)]*\)/, '').trim();      // "19h–22h"
+  var localSplit = (horario.match(/\(([^)]*)\)/) || [,'Brasília'])[1]; // "Brasília"
+  var item =
+    '<div data-lp-extras="hero-schedule">' +
+      '<div class="meta-k">Horário</div>' +
+      '<div class="meta-v"><em>' + horaSplit + '</em></div>' +
+      '<div class="meta-sub">' + localSplit + ' · 5 noites consecutivas</div>' +
+    '</div>';
+
+  // Insere depois do último <div> do hero__meta. Pattern conservador:
+  // pega o conteúdo dentro de <div class="hero__meta">...</div> e injeta antes do fechamento.
+  out = out.replace(
+    /(<div class="hero__meta">[\s\S]*?)(<\/div>\s*<\/section>)/,
+    function (match, inner, tail) {
+      // Se já tem nosso item dentro de inner (não removido), não duplica
+      if (inner.indexOf('data-lp-extras="hero-schedule"') !== -1) return match;
+      return inner + item + tail;
+    }
+  );
+  return out;
+}
+
+// ─── 3c. Adiciona pergunta "Em que horário?" no FAQ ────────────────────────
+function injectFaqSchedule(template, horario) {
+  var stripRe = /<details[^>]*data-lp-extras="faq-schedule"[\s\S]*?<\/details>/g;
+  var out = template.replace(stripRe, '');
+
+  var qa =
+    '<details class="qa" data-lp-extras="faq-schedule">' +
+      '<summary>Em que horário acontecem as aulas?<span class="plus">+</span></summary>' +
+      '<div class="qa__body">' +
+        'As 5 aulas acontecem ao vivo das <strong>' + horario + '</strong>, em 5 noites consecutivas. ' +
+        'Toda aula é gravada e disponibilizada na comunidade para revisão sem prazo.' +
+      '</div>' +
+    '</details>';
+
+  // Insere a nova pergunta como PRIMEIRA do FAQ (depois da abertura do .faq__list)
+  // ou logo após o último </details> antes do fechamento de .faq.
+  // Estratégia: inserir antes do </div> que fecha a div.faq, depois do último </details>.
+  out = out.replace(
+    /(<div class="faq">[\s\S]*?)(<\/details>\s*<\/div>)/,
+    function (match, head, tail) {
+      if (head.indexOf('data-lp-extras="faq-schedule"') !== -1) return match;
+      return head + '</details>' + qa + tail.replace('</details>', '');
+    }
+  );
+  return out;
+}
+
 // ─── 4. Wrapper: pega template JSON, modifica, salva ─────────────────────
 function process(html, c) {
   var m = html.match(/<script type="__bundler\/template">\s*([\s\S]*?)\s*<\/script>/);
@@ -310,6 +367,8 @@ function process(html, c) {
   // Aplica patches no markup
   template = fixCheckoutLinks(template, c.checkout_url);
   template = injectProBadges(template);
+  template = injectHeroSchedule(template, c.horario_aulas);
+  template = injectFaqSchedule(template, c.horario_aulas);
 
   // Insere bloco LP-EXTRAS antes de </head>
   var block = buildExtrasBlock(c);
