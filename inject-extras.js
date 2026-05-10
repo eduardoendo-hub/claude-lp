@@ -200,43 +200,44 @@ function buildExtrasBlock(c) {
     var form = document.getElementById('leadForm');
     if (!form || form.dataset.lpHijacked) return;
     form.dataset.lpHijacked = '1';
-    form.addEventListener('submit', async function(e){
-      e.preventDefault();
-      var fd = new FormData(form);
-      var data = {
-        campaign_slug: CAMPAIGN_SLUG,
-        name:    (fd.get('name')  || '').trim(),
-        email:   (fd.get('email') || '').trim(),
-        phone:   (fd.get('phone') || '').trim(),
-        utm:     utms(),
-        source_page: window.location.href,
-        extra:   { course: fd.get('course') || '' },
-      };
-      // Limpa msgs anteriores
-      form.querySelectorAll('.lp-form-msg').forEach(function(n){ n.remove(); });
+    // Capture phase + sendBeacon: o bundle original do Claude substitui o
+    // innerHTML do form logo apos o submit (mostra tela de sucesso interna),
+    // o que cancelava qualquer fetch async em flight (Failed to fetch). Usamos
+    // sendBeacon — projetado para POST garantido durante unload/replace.
+    // Tradeoff: nao temos resposta do servidor; o servidor ja loga o resultado
+    // e o Lead aparece no RD CRM em <2s. A tela de sucesso do bundle continua
+    // aparecendo normalmente (nao chamamos preventDefault).
+    form.addEventListener('submit', function(e){
       try {
-        // keepalive: true garante que o request nao seja cancelado se o
-        // bundle original do Claude navegar / substituir o form apos o submit.
-        var r = await fetch(INTEGRACAO_RD_URL + '/api/leads', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data),
-          keepalive: true,
-        });
-        if (!r.ok) throw new Error('integracao-rd ' + r.status);
-        var ok = document.createElement('div');
-        ok.className = 'lp-form-msg ok';
-        ok.textContent = '✓ Recebemos seu contato. Em breve um consultor falará com você.';
-        form.appendChild(ok);
-        form.reset();
+        var fd = new FormData(form);
+        var data = {
+          campaign_slug: CAMPAIGN_SLUG,
+          name:    (fd.get('name')  || '').trim(),
+          email:   (fd.get('email') || '').trim(),
+          phone:   (fd.get('phone') || '').trim(),
+          utm:     utms(),
+          source_page: window.location.href,
+          extra:   { course: fd.get('course') || '' },
+        };
+        var blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+        var sent = false;
+        if (navigator.sendBeacon) {
+          sent = navigator.sendBeacon(INTEGRACAO_RD_URL + '/api/leads', blob);
+        }
+        if (!sent) {
+          // Fallback: fetch fire-and-forget com keepalive
+          fetch(INTEGRACAO_RD_URL + '/api/leads', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+            keepalive: true,
+          }).catch(function(){});
+        }
+        console.log('[lp-extras] lead enviado a integracao-rd (beacon=' + sent + ')');
       } catch (err) {
-        console.error('[LP] erro integracao-rd', err);
-        var fail = document.createElement('div');
-        fail.className = 'lp-form-msg fail';
-        fail.textContent = 'Não conseguimos enviar agora. Tente novamente ou fale pelo WhatsApp.';
-        form.appendChild(fail);
+        console.error('[lp-extras] erro ao preparar lead', err);
       }
-    }, false);  /* false = bubble; deixa o tracking original (capture) rodar antes */
+    }, true);  /* capture phase = roda ANTES do handler do bundle */
   }
 
   function safe(fn){ try { fn(); } catch(err){ console.warn('[lp-extras]', err); } }
