@@ -565,6 +565,18 @@ iframe[src*="megasac"],
             });
           } catch(e){ console.warn('[lp-extras] enhanced gtag failed', e); }
         }
+        /* Evento amigavel pro IRIS — separado do qualify_lead_enhanced
+           (que carrega PII pra Google Enhanced Conversions). Esse aqui
+           eh limpo, soh contagem + UTMs. */
+        if (window.gtag) {
+          try {
+            gtag('event', 'lead_form', {
+              campaign_slug: CAMPAIGN_SLUG,
+              page_url: window.location.pathname,
+              value: TICKET, currency: 'BRL'
+            });
+          } catch(e){}
+        }
         // Defesa em profundidade: dispara TANTO fetch keepalive QUANTO sendBeacon.
         // Ambos sao fire-and-forget. Garante entrega mesmo se um for cancelado
         // por unload/replace do bundle React. fetch keepalive aparece no Network
@@ -597,6 +609,65 @@ iframe[src*="megasac"],
         console.error('[lp-extras] erro ao preparar lead', err);
       }
     }, true);  /* capture phase = roda ANTES do handler do bundle */
+  }
+
+  /* ------------------------------------------------------------------
+     GA4 — eventos padronizados pra alimentar o IRIS
+     ------------------------------------------------------------------
+     A LP ja dispara `begin_checkout` (Pixel + GA4) em alguns CTAs
+     e `qualify_lead_enhanced` no submit do form. Aqui adicionamos os
+     nomes amigaveis que o IRIS espera, via delegated listener unico:
+
+       data-track="cta-buy-*"  → click_compra      (botao Engaged)
+       data-track="cta-form-*" → click_consultor   (Falar com especialista)
+       data-track="float-wa"   → click_whats       (WhatsApp fab)
+       href*=wa.me / api.whatsapp → click_whats
+
+     Idempotente — registra o listener uma so vez.
+  */
+  function setupGA4Events(){
+    if (document.__ga4EventsBound) return;
+    document.__ga4EventsBound = true;
+    document.addEventListener('click', function(e){
+      var el = e.target && e.target.closest ? e.target.closest(
+        '[data-track^="cta-buy-"], [data-track^="cta-form-"], ' +
+        '[data-track="float-wa"], a[href*="wa.me"], a[href*="api.whatsapp.com"]'
+      ) : null;
+      if (!el) return;
+      var track = el.getAttribute('data-track') || '';
+      var href  = el.getAttribute('href')       || '';
+      var placement = track || 'unknown';
+      var eventName = null;
+      var params = {
+        campaign_slug: CAMPAIGN_SLUG,
+        placement: placement,
+        page_url: window.location.pathname
+      };
+      if (track.indexOf('cta-buy-') === 0) {
+        eventName = 'click_compra';
+        params.value = TICKET;
+        params.currency = 'BRL';
+      } else if (track.indexOf('cta-form-') === 0) {
+        eventName = 'click_consultor';
+      } else if (track === 'float-wa' || /wa\.me|api\.whatsapp/.test(href)) {
+        eventName = 'click_whats';
+      }
+      if (eventName && window.gtag) {
+        try { gtag('event', eventName, params); } catch(err){}
+      }
+      if (eventName && window.dataLayer) {
+        try { window.dataLayer.push(Object.assign({event: eventName}, params)); } catch(err){}
+      }
+    }, true); /* capture phase: roda antes de outros handlers */
+    /* Page view explicito com produto/campanha — facilita filtro no GA4 */
+    if (window.gtag) {
+      try {
+        gtag('event', 'lp_view', {
+          campaign_slug: CAMPAIGN_SLUG,
+          page_url: window.location.pathname
+        });
+      } catch(err){}
+    }
   }
 
   function safe(fn){ try { fn(); } catch(err){ console.warn('[lp-extras]', err); } }
@@ -644,6 +715,7 @@ iframe[src*="megasac"],
     safe(disableTallos);
   }
   function start(){
+    safe(setupGA4Events);
     safe(notifyWhatsAppClickToIris);
     applyAll();
     if (window.MutationObserver && document.body) {
