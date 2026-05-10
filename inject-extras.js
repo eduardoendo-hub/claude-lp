@@ -150,11 +150,13 @@ function buildExtrasBlock(c) {
 }
 .lp-auth-card--olhar .lp-auth-card__brand { color: #4ce67c; }
 .lp-auth-card__sub {
-  font-size: 12px;
-  color: rgba(247,241,232,0.5);
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  font: 700 15px/1.3 'Inter', -apple-system, sans-serif;
+  color: rgba(247,241,232,0.85);
+  letter-spacing: 0.01em;
+  margin-top: 4px;
 }
+.lp-auth-card--impacta .lp-auth-card__sub { color: #F7F1E8; }
+.lp-auth-card--olhar .lp-auth-card__sub  { color: #F7F1E8; }
 .lp-auth-card__big {
   display: flex;
   align-items: baseline;
@@ -242,22 +244,28 @@ function buildExtrasBlock(c) {
 }
 /* ===== Logos nos cards de autoridade ===== */
 .lp-auth-card__logo {
-  height: 32px;
+  height: 56px;
   width: auto;
-  max-width: 180px;
+  max-width: 240px;
   object-fit: contain;
-  margin-bottom: 4px;
+  margin-bottom: 12px;
+  display: block;
 }
 .lp-auth-card__logo--inline-svg {
   display: inline-block;
 }
+.lp-auth-card--olhar .lp-auth-card__logo {
+  /* Olhar Digital: logo eh circular (olho verde), reservar espaco compativel */
+  height: 64px;
+  max-width: 220px;
+}
 
-/* ===== Banner topo do hero — bonus dos 20 primeiros ===== */
+/* ===== Banner topo do hero — bonus dos 20 primeiros (SOLIDO) ===== */
 .lp-top-banner {
   position: relative;
   z-index: 8800;
-  background: linear-gradient(90deg, rgba(217,119,87,0.18), rgba(217,119,87,0.08));
-  border-bottom: 1px solid rgba(217,119,87,0.35);
+  background: #1a1411;
+  border-bottom: 2px solid #D97757;
   color: #F7F1E8;
   padding: 10px 16px;
   text-align: center;
@@ -267,6 +275,7 @@ function buildExtrasBlock(c) {
   justify-content: center;
   gap: 14px;
   flex-wrap: wrap;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
 }
 .lp-top-banner b { color: #D97757; font-weight: 800; }
 .lp-top-banner__sep { opacity: 0.4; }
@@ -642,18 +651,14 @@ function fixCheckoutLinks(template, checkoutUrl) {
   );
 }
 
-// ─── 3. Insere selo Pro antes dos 4 botões cta-buy-* ───────────────────────
+// ─── 3. Selos "Requer Claude Pro" REMOVIDOS dos CTAs ───────────────────────
+// Decisao do produto: nao queremos afastar publico no hero/CTAs com bloqueio
+// de pre-requisito. A informacao sobre Claude Pro continua no FAQ
+// ("Preciso da assinatura Claude Pro?") — quem tiver duvida, encontra la.
 function injectProBadges(template) {
-  // Remove versões anteriores (regex flexível: classe e marker em qualquer ordem)
+  // Apenas REMOVE versoes anteriores (caso ja injetadas em deploys passados)
   var stripRe = /<span[^>]*class="lp-pro-badge"[^>]*data-lp-extras="probadge"[^>]*>[^<]*<\/span>/g;
-  var out = template.replace(stripRe, '');
-
-  var badge = '<span class="lp-pro-badge" ' + BADGE_ATTR + '>Requer assinatura Claude Pro (US$ 20/mês)</span>';
-  out = out.replace(
-    /(<a\s+[^>]*data-track="cta-buy-(?:hero|format|pricing|final)"[^>]*>)/g,
-    badge + '$1'
-  );
-  return out;
+  return template.replace(stripRe, '');
 }
 
 // ─── 3b. Adiciona bloco "Horário" no hero__meta (visível no hero) ──────────
@@ -712,15 +717,14 @@ function injectAuthoritySplit(template) {
         + '</div>'
       + '</div>'
       // CARD OLHAR DIGITAL
-      // TODO: substituir SVG inline pelo arquivo real quando disponivel.
-      // Hoje usa um lockup tipografico (nao oficial) por nao termos o
-      // SVG/PNG separado do Olhar Digital — soh o lockup combinado existia.
+      // <img> aponta para /logo-olhar-digital.png — deve estar na raiz do
+      // claude-lp (mesmo diretorio do Dockerfile). nginx serve estaticos.
       + '<div class="lp-auth-card lp-auth-card--olhar">'
         + '<div class="lp-auth-card__head">'
-          + '<svg viewBox="0 0 200 32" class="lp-auth-card__logo lp-auth-card__logo--inline-svg" aria-label="Olhar Digital" preserveAspectRatio="xMinYMid meet">'
-            + '<text x="0" y="24" font-family="Inter, -apple-system, sans-serif" font-size="22" font-weight="900" fill="#F7F1E8" letter-spacing="-0.5">OLHAR</text>'
-            + '<text x="92" y="24" font-family="Inter, -apple-system, sans-serif" font-size="22" font-weight="300" fill="#4ce67c" letter-spacing="0.5">DIGITAL</text>'
-          + '</svg>'
+          + '<img src="/logo-olhar-digital.png" alt="Olhar Digital" class="lp-auth-card__logo" '
+            + 'onerror="this.style.display=\'none\'; var s=document.createElement(\'span\'); '
+            + 's.innerHTML=\'<span style=\\\'font:900 28px Inter; color:#F7F1E8; letter-spacing:-0.5px\\\'>OLHAR</span><span style=\\\'font:300 28px Inter; color:#4ce67c; margin-left:6px\\\'>DIGITAL</span>\'; '
+            + 'this.parentNode.insertBefore(s, this);">'
           + '<div class="lp-auth-card__sub">Mídia &amp; Comunidade Tech · 1M+ leitores</div>'
         + '</div>'
         + '<div class="lp-auth-card__big">'
