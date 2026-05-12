@@ -683,12 +683,17 @@ iframe[src*="megasac"],
            que rolam pra outra secao — NAO sao intent de compra real.
            So conta como click_compra se o href aponta pra checkout externo
            (engaged.com.br, hotmart, ou qualquer URL absoluta). Ancoras internas
-           sao silenciosas — nada de evento, soh navegacao. */
-        var isCheckoutLink = !!href && (
-          /engaged\.com\.br/.test(href) ||
-          /hotmart\.com/.test(href) ||
-          /sympla\.com/.test(href) ||
-          /^https?:\/\//i.test(href)
+           sao silenciosas — nada de evento, soh navegacao.
+           NOTA: usa indexOf/comeca-com em vez de regex pra evitar bug de
+           double-escape de barras (/\\/\\/) quando o JS eh serializado
+           dentro de template literal externo. */
+        var h = (href || '').toLowerCase();
+        var isCheckoutLink = h.length > 0 && (
+          h.indexOf('engaged.com.br') !== -1 ||
+          h.indexOf('hotmart.com') !== -1 ||
+          h.indexOf('sympla.com') !== -1 ||
+          h.indexOf('http://') === 0 ||
+          h.indexOf('https://') === 0
         );
         if (!isCheckoutLink) return; /* ancora interna — sem evento */
         eventName = 'click_compra';
@@ -696,7 +701,11 @@ iframe[src*="megasac"],
         params.currency = 'BRL';
       } else if (track.indexOf('cta-form-') === 0) {
         eventName = 'click_consultor';
-      } else if (track === 'float-wa' || /wa\.me|api\.whatsapp/.test(href)) {
+      } else if (
+        track === 'float-wa' ||
+        (href || '').indexOf('wa.me') !== -1 ||
+        (href || '').indexOf('api.whatsapp.com') !== -1
+      ) {
         eventName = 'click_whats';
       }
       if (eventName && window.gtag) {
