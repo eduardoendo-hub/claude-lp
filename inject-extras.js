@@ -632,14 +632,55 @@ iframe[src*="megasac"],
       de um template literal externo e qualquer crase ou interpolacao
       quebra o parser.)
   */
+  /* captureAttribution — le UTMs da URL na primeira visita da sessao e
+     persiste em sessionStorage. Subsequentes pageviews/cliques herdam
+     os mesmos UTMs (cliente nao perde atribuicao quando navega entre
+     ancoras internas, voltinha pelo orgaanico, etc).
+     Tambem captura document.referrer (truncado) pra cobrir trafego
+     sem UTM (orgaanico, direct, etc). */
+  function captureAttribution(){
+    var KEY = 'iris-attribution';
+    try {
+      var existing = sessionStorage.getItem(KEY);
+      if (existing) return JSON.parse(existing);
+    } catch(e){}
+    var qs = window.location.search || '';
+    var params = {};
+    try {
+      var usp = new URLSearchParams(qs);
+      params.utm_source   = usp.get('utm_source')   || null;
+      params.utm_medium   = usp.get('utm_medium')   || null;
+      params.utm_campaign = usp.get('utm_campaign') || null;
+      params.utm_content  = usp.get('utm_content')  || null;
+      params.utm_term     = usp.get('utm_term')     || null;
+    } catch(e){}
+    /* Referrer truncado pra 500 chars (limite do schema). Vazio se mesmo dominio. */
+    var ref = '';
+    try {
+      if (document.referrer) {
+        var refHost = '';
+        try { refHost = new URL(document.referrer).hostname; } catch(e){}
+        if (refHost && refHost !== window.location.hostname) {
+          ref = document.referrer.slice(0, 500);
+        }
+      }
+    } catch(e){}
+    params.referrer = ref || null;
+    try { sessionStorage.setItem(KEY, JSON.stringify(params)); } catch(e){}
+    return params;
+  }
+
   /* pushToIris — empurra evento direto pro cockpit IRIS em real-time
      (Plano C: substitui ingest GA4 Data API). Fire-and-forget via
      fetch keepalive — sobrevive ao unload da pagina igual sendBeacon
      mas usa CORS com preflight padrao (Coolify/Traefik recusam o
-     formato Blob do sendBeacon retornando 503). */
+     formato Blob do sendBeacon retornando 503).
+     Anexa UTMs/referrer da sessao em todo evento — granularidade por
+     canal no cockpit IRIS. */
   function pushToIris(eventName, params){
     if (!IRIS_URL) return;
     try {
+      var attr = captureAttribution() || {};
       var payload = JSON.stringify({
         product_slug: PRODUCT_SLUG,
         event_name: eventName,
@@ -647,7 +688,13 @@ iframe[src*="megasac"],
         page_url: (params && params.page_url) || window.location.pathname,
         value: (params && params.value) || null,
         currency: (params && params.currency) || null,
-        ts: new Date().toISOString()
+        ts: new Date().toISOString(),
+        utm_source:   attr.utm_source   || null,
+        utm_medium:   attr.utm_medium   || null,
+        utm_campaign: attr.utm_campaign || null,
+        utm_content:  attr.utm_content  || null,
+        utm_term:     attr.utm_term     || null,
+        referrer:     attr.referrer     || null
       });
       fetch(IRIS_URL + '/api/events', {
         method: 'POST',
