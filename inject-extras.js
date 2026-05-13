@@ -425,7 +425,7 @@ iframe[src*="megasac"],
       '<button class="lp-sticky-close" aria-label="Fechar">×</button>' +
       '<div class="lp-sticky-bonus">' +
         'Bônus: <strong>' + BONUS_REMAINING + ' primeiros</strong> ganham 1h extra. ' +
-        'Turma <strong>08/06</strong> · ' + HORARIO + ' · R$ ' + TICKET.toLocaleString('pt-BR') + '.' +
+        'Turma <strong>08/06</strong> · ' + HORARIO + ' · <s style="opacity:0.6;margin-right:4px;font-weight:400">R$ 1.800</s> R$ ' + TICKET.toLocaleString('pt-BR') + '.' +
       '</div>' +
       '<a href="' + CHECKOUT_URL + '" data-track="cta-buy-sticky">Quero me matricular</a>';
     document.body.appendChild(bar);
