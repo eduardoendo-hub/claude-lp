@@ -911,6 +911,24 @@ function fixCheckoutLinks(template, checkoutUrl) {
 // Decisao do produto: nao queremos afastar publico no hero/CTAs com bloqueio
 // de pre-requisito. A informacao sobre Claude Pro continua no FAQ
 // ("Preciso da assinatura Claude Pro?") — quem tiver duvida, encontra la.
+// ─── 2b. WhatsApp default message ──────────────────────────────────────────
+// Pre-popula a mensagem em TODOS os links pro WhatsApp (api.whatsapp.com
+// /send?phone=... e wa.me/...) que ainda nao tem text=. Idempotente —
+// re-rodar nao duplica nem sobrescreve uma mensagem ja customizada.
+function injectWhatsAppMessage(template, message) {
+  if (!message || typeof message !== 'string') return template;
+  var encoded = encodeURIComponent(message);
+  // Bate em qualquer URL whatsapp dentro de aspas, captura o que ja tem
+  // depois do phone= ate a proxima " (delimitador do atributo href).
+  // Pula se ja tiver text= (case-insensitive).
+  var re = /(https?:\/\/(?:api\.whatsapp\.com\/send|wa\.me)[^"\\]*)/gi;
+  return template.replace(re, function (url) {
+    if (/[?&]text=/i.test(url)) return url; // ja tem mensagem custom — preserva
+    var sep = url.indexOf('?') === -1 ? '?' : '&';
+    return url + sep + 'text=' + encoded;
+  });
+}
+
 function injectProBadges(template) {
   // Apenas REMOVE versoes anteriores (caso ja injetadas em deploys passados)
   var stripRe = /<span[^>]*class="lp-pro-badge"[^>]*data-lp-extras="probadge"[^>]*>[^<]*<\/span>/g;
@@ -1126,6 +1144,7 @@ function process(html, c) {
 
   // Aplica patches no markup
   template = fixCheckoutLinks(template, c.checkout_url);
+  template = injectWhatsAppMessage(template, c.whatsapp_default_message);
   template = injectProBadges(template);
   template = injectHeroSchedule(template, c.horario_aulas);
   template = injectFaqExtras(template, c.horario_aulas, c.horario_atendimento || '9h–18h dias úteis · sábados 9h–13h');

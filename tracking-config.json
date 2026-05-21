@@ -14,5 +14,6 @@
   "horario_aulas": "19h–22h (Brasília)",
   "horario_atendimento": "9h–18h dias úteis · sábados 9h–13h",
   "ticket_price": 1499,
-  "whatsapp_tooltip": "Tira sua dúvida em 2 min"
+  "whatsapp_tooltip": "Tira sua dúvida em 2 min",
+  "whatsapp_default_message": "Olá! Quero saber mais sobre a Formação Claude Pro."
 }
