@@ -363,6 +363,41 @@ iframe[src*="megasac"],
 
   function utms(){ try { return (window.__lp_utms || {}); } catch(e){ return {}; } }
 
+  // ─── UTM passthrough pro Engaged ─────────────────────────────────────
+  // Reescreve TODOS os links que vao pro CHECKOUT_URL incluindo:
+  //   1. params da URL atual (utm_*, gclid, fbclid, cupom, custom)
+  //   2. fallback nos UTMs persistidos em localStorage (visitas anteriores)
+  // Sem isso a Engaged recebe URL limpa e a venda fica como "direto/null"
+  // no IRIS, perdendo atribuicao ao canal/campanha.
+  function checkoutUrlWithUtms(){
+    try {
+      var current = new URLSearchParams(location.search);
+      var KEYS = ['utm_source','utm_medium','utm_campaign','utm_content','utm_term','gclid','fbclid'];
+      KEYS.forEach(function(k){
+        if (!current.has(k)) {
+          try {
+            var v = localStorage.getItem('lp_' + k);
+            if (v) current.set(k, v);
+          } catch(e){}
+        }
+      });
+      var qs = current.toString();
+      return CHECKOUT_URL + (qs ? '?' + qs : '');
+    } catch(e) {
+      return CHECKOUT_URL;
+    }
+  }
+  function applyCheckoutUtmsToAllLinks(){
+    try {
+      var url = checkoutUrlWithUtms();
+      var sel = '[data-track^="cta-buy-"], a[href*="engaged.com.br/p/checkout"]';
+      document.querySelectorAll(sel).forEach(function(el){
+        if (el.tagName !== 'A') return;
+        el.setAttribute('href', url);
+      });
+    } catch(e){}
+  }
+
   // ─── Helpers para Pixel CAPI dedup ─────────────────────────────────────
   function uuid(){
     try { if (window.crypto && crypto.randomUUID) return crypto.randomUUID(); } catch(e){}
@@ -427,7 +462,7 @@ iframe[src*="megasac"],
         'Bônus: <strong>' + BONUS_REMAINING + ' primeiros</strong> ganham 1h extra. ' +
         'Turma <strong>08/06</strong> · ' + HORARIO + ' · <s style="opacity:0.6;margin-right:4px;font-weight:400">R$ 1.800</s> R$ ' + TICKET.toLocaleString('pt-BR') + '.' +
       '</div>' +
-      '<a href="' + CHECKOUT_URL + '" data-track="cta-buy-sticky">Quero me matricular</a>';
+      '<a href="' + checkoutUrlWithUtms() + '" data-track="cta-buy-sticky">Quero me matricular</a>';
     document.body.appendChild(bar);
     bar.querySelector('.lp-sticky-close').addEventListener('click', function(){
       bar.remove();
@@ -793,7 +828,7 @@ iframe[src*="megasac"],
     banner.innerHTML =
       '<span>🎁 <b>Bônus</b> dos primeiros ' + BONUS_REMAINING + ' inscritos: <b>1h extra</b> em grupo com o instrutor</span>' +
       '<span class="lp-top-banner__sep">·</span>' +
-      '<a href="' + CHECKOUT_URL + '" data-track="cta-buy-banner">Garantir minha vaga</a>';
+      '<a href="' + checkoutUrlWithUtms() + '" data-track="cta-buy-banner">Garantir minha vaga</a>';
     if (document.body.firstChild) {
       document.body.insertBefore(banner, document.body.firstChild);
     } else {
@@ -823,6 +858,7 @@ iframe[src*="megasac"],
     safe(injectWaBubble);
     safe(hijackLeadForm);
     safe(disableTallos);
+    safe(applyCheckoutUtmsToAllLinks); // reescreve hrefs com UTMs (cobre estaticos + dinamicos)
   }
   function start(){
     safe(setupGA4Events);
@@ -832,6 +868,17 @@ iframe[src*="megasac"],
       var obs = new MutationObserver(function(){ applyAll(); });
       obs.observe(document.body, { childList: true, subtree: true });
     }
+    // Belt-and-suspenders: re-escreve href no exato momento do click
+    // (cobre janela rara entre injecao e click, e CTAs que mudem href).
+    document.addEventListener('click', function(e){
+      try {
+        var el = e.target && e.target.closest
+          ? e.target.closest('[data-track^="cta-buy-"], a[href*="engaged.com.br/p/checkout"]')
+          : null;
+        if (!el || el.tagName !== 'A') return;
+        el.setAttribute('href', checkoutUrlWithUtms());
+      } catch(err){}
+    }, true); // capture=true: roda ANTES de outros handlers
   }
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', start);
