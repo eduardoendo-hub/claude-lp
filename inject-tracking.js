@@ -75,39 +75,13 @@ function buildHelper(cfg) {
   });
   window.__lp_utms = utms;
 
-  // ---- UTM propagation to Engaged checkout links ----
-  // Sem isto, todo clique em "comprar" vai pro Engaged SEM querystring de UTM.
-  // O Engaged então envia o webhook com queryParams vazio e o IRIS não consegue
-  // atribuir a venda à campanha de origem.
-  // IMPORTANTE: o setter so executa se o href novo for diferente do atual —
-  // sem isso, o MutationObserver dispararia em loop infinito ao observar
-  // attributeFilter:['href'] (a propria escrita disparava o observer).
-  function appendUtmsToEngagedLinks(){
-    try {
-      var sel = 'a[href*="impacta.site.engaged.com.br"], a[href*="engaged.com.br/p/checkout"]';
-      document.querySelectorAll(sel).forEach(function(a){
-        try {
-          var u = new URL(a.href);
-          UTM_KEYS.forEach(function(k){ if (utms[k]) u.searchParams.set(k, utms[k]); });
-          if (${productSlug})  u.searchParams.set('product', ${productSlug});
-          if (${campaignSlug}) u.searchParams.set('iris_campaign', ${campaignSlug});
-          var nh = u.toString();
-          if (a.href !== nh) a.href = nh;
-        } catch(e){}
-      });
-    } catch(e){}
-  }
-  // roda agora (caso DOM ja exista) + ao DOMContentLoaded + observer p/ DOM dinamico.
-  // Observer SO em childList/subtree (NAO attributes) pra evitar loop com
-  // o proprio set de href feito acima.
-  appendUtmsToEngagedLinks();
-  document.addEventListener('DOMContentLoaded', appendUtmsToEngagedLinks);
-  try {
-    new MutationObserver(appendUtmsToEngagedLinks).observe(
-      document.body || document.documentElement,
-      { childList: true, subtree: true }
-    );
-  } catch(e){}
+  // NOTA: a propagacao de UTMs pros links engaged.com.br ja eh feita pela
+  // funcao applyCheckoutUtmsToAllLinks() / checkoutUrlWithUtms() embarcada
+  // no bundler original do Claude LP. Validei em 24/05/2026 que todos os 6
+  // CTAs ja saem com utm_source/medium/campaign/content/term no querystring
+  // do Engaged. Nao injetar duplicata aqui — duplicar causa race
+  // (applyCheckoutUtmsToAllLinks sobrescreve o que injetamos e ainda gerava
+  // loop infinito quando o MutationObserver observava 'href').
 
   function track(name, extra){
     var payload = Object.assign({}, utms, extra || {});
