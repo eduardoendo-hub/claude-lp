@@ -61,6 +61,8 @@ function buildHelper(cfg) {
   const pixelId = cfg.meta_pixel_id ? JSON.stringify(cfg.meta_pixel_id) : 'null';
   const gadsId = cfg.google_ads_conversion_id ? JSON.stringify(cfg.google_ads_conversion_id) : 'null';
   const gadsLabel = cfg.google_ads_conversion_label ? JSON.stringify(cfg.google_ads_conversion_label) : 'null';
+  const productSlug = JSON.stringify(cfg.product_slug || '');
+  const campaignSlug = JSON.stringify(cfg.campaign_slug || '');
   return `<script>
 (function(){
   var UTM_KEYS = ['utm_source','utm_medium','utm_campaign','utm_content','utm_term','gclid','fbclid'];
@@ -72,6 +74,35 @@ function buildHelper(cfg) {
     else { try { var s = localStorage.getItem('lp_'+k); if (s) utms[k] = s; } catch(e){} }
   });
   window.__lp_utms = utms;
+
+  // ---- UTM propagation to Engaged checkout links ----
+  // Sem isto, todo clique em "comprar" vai pro Engaged SEM querystring de UTM.
+  // O Engaged então envia o webhook com queryParams vazio e o IRIS não consegue
+  // atribuir a venda à campanha de origem. Reescreve todo <a href*=engaged.com.br>
+  // ao carregar + a cada mutação do DOM (sticky CTA, hydration tardia, etc).
+  function appendUtmsToEngagedLinks(){
+    try {
+      var sel = 'a[href*="impacta.site.engaged.com.br"], a[href*="engaged.com.br/p/checkout"]';
+      document.querySelectorAll(sel).forEach(function(a){
+        try {
+          var u = new URL(a.href);
+          UTM_KEYS.forEach(function(k){ if (utms[k]) u.searchParams.set(k, utms[k]); });
+          if (${productSlug})  u.searchParams.set('product', ${productSlug});
+          if (${campaignSlug}) u.searchParams.set('iris_campaign', ${campaignSlug});
+          a.href = u.toString();
+        } catch(e){}
+      });
+    } catch(e){}
+  }
+  // roda agora (caso DOM ja exista) + ao DOMContentLoaded + observer p/ DOM dinamico
+  appendUtmsToEngagedLinks();
+  document.addEventListener('DOMContentLoaded', appendUtmsToEngagedLinks);
+  try {
+    new MutationObserver(appendUtmsToEngagedLinks).observe(
+      document.body || document.documentElement,
+      { childList: true, subtree: true, attributes: true, attributeFilter: ['href'] }
+    );
+  } catch(e){}
 
   function track(name, extra){
     var payload = Object.assign({}, utms, extra || {});
