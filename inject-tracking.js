@@ -78,8 +78,10 @@ function buildHelper(cfg) {
   // ---- UTM propagation to Engaged checkout links ----
   // Sem isto, todo clique em "comprar" vai pro Engaged SEM querystring de UTM.
   // O Engaged então envia o webhook com queryParams vazio e o IRIS não consegue
-  // atribuir a venda à campanha de origem. Reescreve todo <a href*=engaged.com.br>
-  // ao carregar + a cada mutação do DOM (sticky CTA, hydration tardia, etc).
+  // atribuir a venda à campanha de origem.
+  // IMPORTANTE: o setter so executa se o href novo for diferente do atual —
+  // sem isso, o MutationObserver dispararia em loop infinito ao observar
+  // attributeFilter:['href'] (a propria escrita disparava o observer).
   function appendUtmsToEngagedLinks(){
     try {
       var sel = 'a[href*="impacta.site.engaged.com.br"], a[href*="engaged.com.br/p/checkout"]';
@@ -89,18 +91,21 @@ function buildHelper(cfg) {
           UTM_KEYS.forEach(function(k){ if (utms[k]) u.searchParams.set(k, utms[k]); });
           if (${productSlug})  u.searchParams.set('product', ${productSlug});
           if (${campaignSlug}) u.searchParams.set('iris_campaign', ${campaignSlug});
-          a.href = u.toString();
+          var nh = u.toString();
+          if (a.href !== nh) a.href = nh;
         } catch(e){}
       });
     } catch(e){}
   }
-  // roda agora (caso DOM ja exista) + ao DOMContentLoaded + observer p/ DOM dinamico
+  // roda agora (caso DOM ja exista) + ao DOMContentLoaded + observer p/ DOM dinamico.
+  // Observer SO em childList/subtree (NAO attributes) pra evitar loop com
+  // o proprio set de href feito acima.
   appendUtmsToEngagedLinks();
   document.addEventListener('DOMContentLoaded', appendUtmsToEngagedLinks);
   try {
     new MutationObserver(appendUtmsToEngagedLinks).observe(
       document.body || document.documentElement,
-      { childList: true, subtree: true, attributes: true, attributeFilter: ['href'] }
+      { childList: true, subtree: true }
     );
   } catch(e){}
 
