@@ -62,6 +62,13 @@ function buildHeadTags() {
 
   const parts = [];
   parts.push('<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">');
+  // Verificacoes de search engines (cola o codigo no config; vazio = nao injeta)
+  if (seo.google_site_verification) {
+    parts.push('<meta name="google-site-verification" content="' + esc(seo.google_site_verification) + '">');
+  }
+  if (seo.bing_site_verification) {
+    parts.push('<meta name="msvalidate.01" content="' + esc(seo.bing_site_verification) + '">');
+  }
   if (themeColor) parts.push('<meta name="theme-color" content="' + esc(themeColor) + '">');
   if (canonical) parts.push('<link rel="canonical" href="' + esc(canonical) + '">');
   if (favicon) parts.push('<link rel="icon" href="' + esc(favicon) + '">');
