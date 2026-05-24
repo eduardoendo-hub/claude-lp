@@ -15,5 +15,43 @@
   "horario_atendimento": "9h–18h dias úteis · sábados 9h–13h",
   "ticket_price": 1499,
   "whatsapp_tooltip": "Tira sua dúvida em 2 min",
-  "whatsapp_default_message": "Olá! Quero saber mais sobre a Formação Claude Pro."
+  "whatsapp_default_message": "Olá! Quero saber mais sobre a Formação Claude Pro.",
+
+  "seo": {
+    "canonical_url": "https://claude.impacta.com.br/",
+    "og_image_url": "https://claude.impacta.com.br/logo-impacta.png",
+    "favicon_url": "https://claude.impacta.com.br/logo-impacta.png",
+    "apple_touch_icon_url": "https://claude.impacta.com.br/logo-impacta.png",
+    "theme_color": "#0e0b08",
+    "site_name": "Impacta Treinamentos",
+    "twitter_handle": "@impactatreinamentos",
+    "organization": {
+      "name": "Impacta Treinamentos",
+      "url": "https://www.impacta.com.br",
+      "logo": "https://claude.impacta.com.br/logo-impacta.png",
+      "sameAs": [
+        "https://www.instagram.com/impacta",
+        "https://www.linkedin.com/school/faculdade-impacta-de-tecnologia",
+        "https://www.youtube.com/@impactatecnologia"
+      ]
+    },
+    "course": {
+      "name": "Formação Claude Pro: Do Cowork ao Code",
+      "description": "Em 5 dias e 20 projetos reais, você sai automatizando processos de negócio com IA — análises, relatórios, agentes autônomos e Skills próprias.",
+      "url": "https://claude.impacta.com.br/",
+      "course_mode": "online",
+      "is_live": true,
+      "language": "pt-BR",
+      "duration_iso": "P5D",
+      "start_date": "2026-06-08T19:00:00-03:00",
+      "end_date": "2026-06-12T22:00:00-03:00",
+      "price": 1499,
+      "currency": "BRL",
+      "instructor_name": "Cesar Almendra",
+      "instructor_bio": "Instrutor sênior de IA aplicada — Impacta + Olhar Digital",
+      "available_to": "Profissionais com assinatura Claude Pro ou superior",
+      "co_provider_name": "Olhar Digital",
+      "co_provider_url": "https://olhardigital.com.br"
+    }
+  }
 }
