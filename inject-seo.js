@@ -61,7 +61,22 @@ function buildHeadTags() {
   const twitterHandle = seo.twitter_handle || '';
 
   const parts = [];
+  // Mobile responsive — sem isso o pre-hidratacao quebra em mobile e o
+  // Google penaliza o Mobile-First Indexing.
+  parts.push('<meta name="viewport" content="width=device-width, initial-scale=1">');
   parts.push('<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">');
+  // Description CLASSICA (Google usa direto pro snippet do SERP, separado
+  // do og:description). Pega do config.seo.course.description.
+  if (desc) parts.push('<meta name="description" content="' + esc(desc) + '">');
+  // Author / publisher (ajuda Knowledge Panel)
+  if (seo.organization?.name) {
+    parts.push('<meta name="author" content="' + esc(seo.organization.name) + '">');
+    parts.push('<meta name="publisher" content="' + esc(seo.organization.name) + '">');
+  }
+  // Keywords (peso pequeno hoje mas barato)
+  if (seo.keywords) {
+    parts.push('<meta name="keywords" content="' + esc(seo.keywords) + '">');
+  }
   // Verificacoes de search engines (cola o codigo no config; vazio = nao injeta)
   if (seo.google_site_verification) {
     parts.push('<meta name="google-site-verification" content="' + esc(seo.google_site_verification) + '">');
@@ -297,7 +312,13 @@ function buildBlock(template) {
 //      as mesmas tags (browsers de usuarios reais), evitando que o JS
 //      sobrescreva o <head> e remova as tags estaticas
 //
-const html = fs.readFileSync(HTML_PATH, 'utf8');
+let html = fs.readFileSync(HTML_PATH, 'utf8');
+
+// Garante <html lang="pt-BR"> no shell estatico (Google usa pra idioma)
+const lang = seo.course?.language || 'pt-BR';
+if (/<html(\s|>)/i.test(html) && !/<html[^>]*\blang=/i.test(html.match(/<html[^>]*>/)?.[0] || '')) {
+  html = html.replace(/<html(\s|>)/i, '<html lang="' + lang + '"$1');
+}
 
 // Extrai FAQ do bundle template (pra montar FAQPage schema) — so leitura
 const m = html.match(/<script type="__bundler\/template">\s*([\s\S]*?)\s*<\/script>/);
@@ -323,6 +344,8 @@ const seoBlock = (function () {
 // que aparece no HTML servido).
 const staticStripRe = new RegExp(MARK_START + '[\\s\\S]*?' + MARK_END, 'g');
 let workingHtml = html.replace(staticStripRe, '');
+// Override do <html lang> ja foi feito acima (linha 295). 'html' agora
+// ja eh let, entao a modificacao persiste em workingHtml.
 if (!workingHtml.includes('</head>')) {
   throw new Error('Não encontrei </head> no index.html estatico');
 }
