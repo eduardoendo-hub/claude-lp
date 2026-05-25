@@ -86,7 +86,10 @@ function buildHeadTags() {
   }
   if (themeColor) parts.push('<meta name="theme-color" content="' + esc(themeColor) + '">');
   if (canonical) parts.push('<link rel="canonical" href="' + esc(canonical) + '">');
-  if (favicon) parts.push('<link rel="icon" href="' + esc(favicon) + '">');
+  if (favicon) {
+    parts.push('<link rel="icon" href="' + esc(favicon) + '">');
+    parts.push('<link rel="shortcut icon" href="' + esc(favicon) + '">'); // browsers legados
+  }
   if (appleIcon) parts.push('<link rel="apple-touch-icon" href="' + esc(appleIcon) + '">');
 
   // Open Graph
