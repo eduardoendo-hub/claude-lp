@@ -323,6 +323,17 @@ if (/<html(\s|>)/i.test(html) && !/<html[^>]*\blang=/i.test(html.match(/<html[^>
   html = html.replace(/<html(\s|>)/i, '<html lang="' + lang + '"$1');
 }
 
+// Override do <title> estatico — sobrescreve o gerado pelo bundler do Claude
+// (que era so o curso, sem keywords de busca tipo "Curso de Claude Code").
+// O title_override entra no config; se vazio, mantem o que o bundler colocou.
+if (seo.title_override && /<title>[^<]*<\/title>/i.test(html)) {
+  const safe = seo.title_override
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+  html = html.replace(/<title>[^<]*<\/title>/i, '<title>' + safe + '</title>');
+}
+
 // Extrai FAQ do bundle template (pra montar FAQPage schema) — so leitura
 const m = html.match(/<script type="__bundler\/template">\s*([\s\S]*?)\s*<\/script>/);
 let faqForSchema = [];

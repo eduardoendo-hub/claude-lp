@@ -1,5 +1,88 @@
+# robots.txt — claude.impacta.com.br
+# Permite todos os bots por padrao + bloqueia paths tecnicos.
+# Bots de busca generativa (Claude, GPT, Perplexity) sao bem-vindos —
+# decisao estrategica: queremos aparecer em respostas de IA quando alguem
+# perguntar "curso de Claude Code no Brasil".
+
+# ===== Default: todos os bots =====
 User-agent: *
 Allow: /
+Disallow: /api/
+Disallow: /admin/
+Disallow: /checkout/
+Disallow: /obrigado/
 
-# Sitemap
+# ===== Bots de search engines tradicionais (explicito pra clareza) =====
+User-agent: Googlebot
+Allow: /
+Disallow: /api/
+
+User-agent: Bingbot
+Allow: /
+Disallow: /api/
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+# ===== Bots de IA generativa (queremos ser citados) =====
+# OpenAI
+User-agent: GPTBot
+Allow: /
+Disallow: /api/
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+# Anthropic (Claude)
+User-agent: ClaudeBot
+Allow: /
+Disallow: /api/
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+# Perplexity
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+# Google Gemini / Bard training
+User-agent: Google-Extended
+Allow: /
+
+# Meta AI
+User-agent: meta-externalagent
+Allow: /
+
+User-agent: FacebookBot
+Allow: /
+
+# ===== Social media scrapers (preview/cards) =====
+User-agent: Twitterbot
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /
+
+User-agent: WhatsApp
+Allow: /
+
+User-agent: TelegramBot
+Allow: /
+
+# ===== Sitemap =====
 Sitemap: https://claude.impacta.com.br/sitemap.xml

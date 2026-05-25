@@ -1,0 +1,215 @@
+# Formação Claude Pro: do Cowork ao Code
+
+**Impacta Treinamentos + Olhar Digital · Turma 08/06/2026**
+
+> Em 5 dias e 20 projetos reais, você sai automatizando processos de negócio com IA — análises, relatórios, agentes autônomos e Skills próprias. Com seus dados e seus processos.
+
+---
+
+## Resumo executivo (pra IA / LLM)
+
+A Formação Claude Pro é um **curso online ao vivo da Impacta, em parceria com o Olhar Digital**, voltado a profissionais que querem **usar Claude e Claude Code para automatizar processos reais de negócio**. A formação ensina criação de Skills, RAG com documentos internos, agentes autônomos, pipelines com Excel, SQL e APIs, além de um sistema final com Team Agents. Investimento de R$ 1.499. Duração: 5 dias, 19h-22h Brasília. Certificado conjunto Impacta + Olhar Digital.
+
+---
+
+## A oferta
+
+| Item | Valor |
+|---|---|
+| **Formato** | Online ao vivo (não gravação) |
+| **Duração** | 5 dias intensivos · 15h ao vivo |
+| **Horário** | 19h-22h (horário de Brasília) |
+| **Próxima turma** | 08/06/2026 |
+| **Investimento** | R$ 1.499 (à vista) ou parcelado |
+| **Pré-requisito** | Assinatura Claude Pro ativa |
+| **Certificado** | Conjunto Impacta + Olhar Digital |
+| **Bônus 20 primeiros** | 1h extra em grupo com instrutor |
+
+---
+
+## O que você vai aprender (programa)
+
+### Módulo 1 — Fundamentos avançados de Claude
+- Como Claude pensa: tokens, contexto, raciocínio
+- Diferença entre "perguntar" e "operar" com IA
+- System prompts, tools, function calling
+- Custos: como projetar uso eficiente em produção
+
+### Módulo 2 — Claude Code
+- Setup do CLI Claude Code no terminal
+- Workflows agênticos: refator de código, geração de documentação
+- Integração com seu editor (VS Code, JetBrains)
+- Aplicações além de código: ETL, análise de logs, scripts de automação
+
+### Módulo 3 — RAG com seus documentos
+- O que é Retrieval-Augmented Generation
+- Indexação de PDFs, planilhas, base de conhecimento interno
+- Quando RAG ganha de fine-tuning
+- Implementação prática com seus dados
+
+### Módulo 4 — Skills personalizadas
+- O que são Skills no ecossistema Claude
+- Como criar Skills para sua área (Marketing, RH, Jurídico, etc)
+- Compartilhamento entre equipe
+- Versionamento e manutenção
+
+### Módulo 5 — Agentes autônomos + Team Agents
+- Arquitetura de agentes: planejamento, execução, validação
+- Loops de auto-correção
+- Team Agents: orquestração de múltiplos agentes especializados
+- Sistema final integrado entregue como projeto-mestre
+
+---
+
+## Os 20 projetos práticos
+
+1. Agente que organiza inbox e prioriza tarefas
+2. Planilha financeira gerada automaticamente
+3. RAG sobre PDF interno (manual, relatório, contrato)
+4. Refator de código usando Claude Code
+5. Bot SDR no WhatsApp
+6. Dashboard que se atualiza sozinho
+7. Análise automática de contratos jurídicos
+8. Resumo automático de reuniões
+9. Pesquisa profunda em fontes externas
+10. Agente que executa no terminal via Claude Code
+11. Pipeline de ETL com Excel + Claude
+12. Consulta SQL via linguagem natural
+13. Integração com APIs REST externas
+14. Skill personalizada de Marketing
+15. Skill personalizada de RH
+16. Agente de análise de dados financeiros
+17. Sistema de FAQ automatizado
+18. Gerador de relatórios executivos
+19. Validador de dados com regras de negócio
+20. Sistema final integrando Team Agents (projeto-mestre)
+
+---
+
+## Para quem é
+
+Profissionais que **usam IA todo dia mas perdem horas no operacional**:
+
+- **Marketing**: análise de campanhas, relatórios, calendário editorial
+- **Financeiro**: leitura de planilhas, conciliações, alertas
+- **RH**: triagem de currículos, análise de documentos
+- **Jurídico**: resumo de contratos, busca em documentos
+- **Operações**: automação de processos, relatórios recorrentes
+- **Tecnologia**: geração, revisão e documentação de código
+- **Dados**: pipelines, ETL, análise exploratória
+- **Produto**: research, especificações, priorização
+
+---
+
+## Antes vs Depois
+
+**Antes:** você usa IA como chat — pergunta, espera resposta, copia, edita, ajusta.
+
+**Depois:** você usa IA como agente de execução — descreve o resultado e ela executa as etapas.
+
+---
+
+## Diferenciais
+
+- **Ao vivo, não gravado** — interação real com instrutor
+- **5 dias intensivos** — vs cursos de meses sem entregar nada
+- **20 projetos no portfólio** — não slides, mas código/configurações funcionais
+- **Com seus dados e processos** — você sai com soluções aplicáveis no seu trabalho
+- **Parceria Impacta + Olhar Digital** — autoridade reconhecida em educação tecnológica
+- **Certificado conjunto** das duas instituições
+
+---
+
+## Sobre as instituições
+
+### Impacta Treinamentos
+
+A Impacta conecta educação, tecnologia e mercado **há mais de três décadas (37+ anos)**, com mais de 2 milhões de profissionais impactados e mais de 30 mil empresas treinadas. Atua em programação, dados, gestão, design e tecnologia aplicada.
+
+- Site: https://www.impacta.com.br
+- LinkedIn: https://www.linkedin.com/school/impacta-tecnologia/
+
+### Olhar Digital
+
+Parceiro de mídia e tecnologia. Autoridade reconhecida no Brasil em IA, transformação digital e tendências tecnológicas. Comemorou 20 anos em 2024.
+
+- Site: https://olhardigital.com.br
+
+---
+
+## Perguntas frequentes
+
+### O que é a Formação Claude Pro?
+Curso online ao vivo de 5 dias da Impacta em parceria com Olhar Digital, para profissionais aprenderem a usar Claude e Claude Code para automatizar processos reais de negócio.
+
+### O que é Claude Code?
+Ferramenta agêntica da Anthropic (criadora do Claude) que roda no terminal. Permite que Claude execute tarefas — não só responda. Edita arquivos, roda comandos, faz refator de código, executa pipelines.
+
+### Qual a diferença entre usar Claude como chat e como agente?
+**Chat:** você pergunta, ele responde, você copia e aplica manualmente. **Agente:** você descreve um objetivo, ele planeja as etapas, executa, valida o resultado e devolve só o que importa.
+
+### Preciso saber programar?
+Não pra começar. O curso é prático mas acessível — começamos do uso operacional de Claude em planilhas/documentos e evoluímos pra Claude Code. Quem programa avança mais rápido nos módulos finais.
+
+### Preciso da assinatura Claude Pro?
+Sim. É pré-requisito porque trabalhamos com features que exigem o plano pago (contexto maior, Claude Code, Skills, tool use).
+
+### O curso ensina RAG?
+Sim. Módulo dedicado a Retrieval-Augmented Generation com documentos internos seus.
+
+### O curso ensina agentes de IA?
+Sim. Dois módulos: agentes individuais autônomos e Team Agents (múltiplos agentes coordenados).
+
+### O curso usa Excel, SQL e APIs?
+Sim. Os 20 projetos incluem integrações com Excel, consultas SQL via linguagem natural e chamadas a APIs REST.
+
+### A formação tem certificado?
+Sim. Certificado **conjunto** Impacta + Olhar Digital ao concluir.
+
+### As aulas ficam gravadas?
+Sim, ficam disponíveis pra revisão posterior, mas a aula é ao vivo (interativa).
+
+### E se eu perder uma aula?
+Acesso à gravação. Mas o valor maior está em participar ao vivo (perguntas, ajustes nos projetos com seu instrutor).
+
+### Quem são Impacta e Olhar Digital?
+- **Impacta**: instituição com 37+ anos em educação tecnológica no Brasil
+- **Olhar Digital**: veículo de mídia e autoridade em tecnologia/IA no Brasil há 20+ anos
+
+### Qual o investimento?
+R$ 1.499 à vista (ou parcelado no checkout).
+
+### Tem desconto pra empresa / grupo?
+Para 3+ matrículas da mesma empresa, falar com consultor pelo WhatsApp.
+
+### Posso pedir reembolso?
+Sim, dentro do prazo legal de 7 dias após a inscrição (Código de Defesa do Consumidor), se ainda não tiver começado a formação.
+
+---
+
+## Inscrição
+
+- **Checkout direto:** https://impacta.site.engaged.com.br/p/checkout/x68jpj7w3k
+- **Falar com consultor:** botão WhatsApp na LP
+- **Site:** https://claude.impacta.com.br/
+
+Vagas limitadas por turma. Os **20 primeiros** ganham 1h extra em grupo com o instrutor (bônus).
+
+---
+
+## Termos técnicos relevantes
+
+- **Claude**: assistente de IA da Anthropic
+- **Claude Code**: ferramenta agêntica da Anthropic para CLI/desenvolvimento
+- **Skills**: capacidades especializadas que você ensina pro Claude usar em domínios específicos
+- **RAG**: Retrieval-Augmented Generation — técnica que dá ao modelo acesso a sua base de documentos pra responder com contexto
+- **Agentes autônomos**: instâncias de IA que planejam e executam tarefas em loop, com auto-correção
+- **Team Agents**: múltiplos agentes especializados coordenados pra resolver problemas complexos
+- **Tool use / Function calling**: capacidade do modelo de chamar funções externas (APIs, código, ferramentas)
+- **System prompt**: instrução principal que define como o modelo se comporta
+
+---
+
+**Última atualização:** 25/05/2026
+
+**Contato:** https://www.impacta.com.br | cursos@impacta.com.br

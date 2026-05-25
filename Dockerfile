@@ -6,7 +6,7 @@
 FROM node:22-alpine AS builder
 WORKDIR /build
 COPY . .
-RUN node inject-tracking.js && node inject-extras.js && node inject-seo.js
+RUN node inject-tracking.js && node inject-extras.js && node inject-use-cases.js && node inject-alt-text.js && node inject-seo.js && node inject-body-seo.js && node gen-sitemap.js
 
 # ─────────────────────────────────────────────────────────────────────
 # Stage 2 — runtime: nginx servindo os arquivos ja processados
@@ -18,5 +18,9 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 RUN rm -f /usr/share/nginx/html/inject-extras.js \
           /usr/share/nginx/html/inject-tracking.js \
           /usr/share/nginx/html/inject-seo.js \
+          /usr/share/nginx/html/inject-body-seo.js \
+          /usr/share/nginx/html/inject-alt-text.js \
+          /usr/share/nginx/html/inject-use-cases.js \
+          /usr/share/nginx/html/gen-sitemap.js \
           /usr/share/nginx/html/Dockerfile
 EXPOSE 80

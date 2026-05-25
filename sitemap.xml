@@ -3,12 +3,13 @@
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://claude.impacta.com.br/</loc>
+    <lastmod>2026-05-25</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
     <image:image>
       <image:loc>https://claude.impacta.com.br/logo-impacta.png</image:loc>
-      <image:title>Formação Claude Pro: Do Cowork ao Code · Impacta × Olhar Digital</image:title>
-      <image:caption>Em 5 dias e 20 projetos reais, você sai automatizando processos de negócio com IA.</image:caption>
+      <image:title>Formação Claude Pro: Do Cowork ao Code</image:title>
+      <image:caption>Em 5 dias e 20 projetos reais, você sai automatizando processos de negócio com IA — análises, relatórios, agentes autônomos e Skills próprias.</image:caption>
     </image:image>
   </url>
 </urlset>

@@ -1,0 +1,89 @@
+# Formação Claude Pro · Impacta + Olhar Digital
+
+> Curso online ao vivo de 5 dias para profissionais aprenderem a operar Claude e Claude Code em processos reais de negócio — automação, RAG, agentes autônomos, Skills, integração com Excel/SQL/APIs. Promovido pela Impacta Treinamentos em parceria com Olhar Digital.
+
+## Página principal
+
+- [Formação Claude Pro](https://claude.impacta.com.br/): Landing oficial — programa completo, instrutor, datas, investimento, FAQ e inscrição.
+
+## Sobre o curso
+
+A Formação Claude Pro: do Cowork ao Code é um curso online ao vivo de 5 dias (das 19h às 22h, horário de Brasília) em que profissionais aprendem a transformar Claude em uma central de execução: analisando documentos, consultando planilhas, criando Skills personalizadas, usando RAG sobre bases internas e construindo agentes autônomos para processos reais de negócio.
+
+A turma atual é **08/06/2026**. Investimento: **R$ 1.499** (à vista) ou parcelado. Certificado conjunto **Impacta + Olhar Digital**.
+
+## O que o aluno entrega ao final
+
+20 projetos práticos construídos durante a formação, incluindo:
+
+- Agentes que organizam inbox e priorizam tarefas
+- Planilhas financeiras geradas e atualizadas por IA
+- Bases RAG sobre PDFs/documentos internos da empresa
+- Bots SDR conectados a WhatsApp
+- Dashboards que se atualizam sozinhos
+- Análise de contratos jurídicos
+- Resumos automáticos de reuniões
+- Pesquisa profunda em fontes externas
+- Agentes executando comandos no terminal via Claude Code
+- Pipelines com Excel, SQL e APIs
+- Sistema final com múltiplos Team Agents coordenados
+
+## Para quem é
+
+Profissionais que **usam IA todo dia mas perdem horas no operacional** — gestores, analistas, head/diretores de marketing, financeiro, RH, jurídico, operações, dados, tecnologia e produto. Pré-requisito: assinatura Claude Pro ativa.
+
+## Para quem NÃO é
+
+- Quem está começando do zero em IA (precisa saber usar Claude/ChatGPT como chat antes)
+- Quem quer só "aprender prompt engineering"
+- Quem busca curso assíncrono em vídeo gravado (este é ao vivo, com aplicação prática)
+
+## Diferenciais
+
+- **Ao vivo** com instrutor (não gravação)
+- **5 dias intensivos** vs cursos de meses
+- **20 projetos reais** entregues no portfólio
+- **Com os próprios dados/processos** do aluno
+- **Parceria Impacta + Olhar Digital** (37+ anos de educação tecnológica)
+- **Certificado conjunto** das duas instituições
+
+## Tópicos cobertos
+
+- Claude (Anthropic) — fundamentos avançados
+- Claude Code — uso no terminal pra desenvolvimento e automação
+- Agentes de IA autônomos
+- RAG (Retrieval-Augmented Generation) sobre documentos internos
+- Skills personalizadas no Claude
+- Tool use / function calling
+- Pipelines de automação com Excel, SQL e APIs REST
+- Team Agents (múltiplos agentes coordenados)
+- Boas práticas de IA aplicada a negócios
+- Custos e operação em produção
+
+## Entidades
+
+- **Impacta Treinamentos**: instituição de educação em tecnologia há 37+ anos, 2 milhões de profissionais impactados.
+- **Olhar Digital**: parceiro de mídia e tecnologia, autoridade reconhecida em IA e tendências digitais no Brasil.
+- **Claude**: assistente de IA da Anthropic.
+- **Claude Code**: ferramenta agêntica da Anthropic para desenvolvimento e automação via CLI.
+
+## Inscrição
+
+Vagas limitadas por turma. Os **20 primeiros** ganham bônus de **1 hora extra** em grupo com o instrutor.
+
+- Página de inscrição: https://impacta.site.engaged.com.br/p/checkout/x68jpj7w3k
+- Falar com consultor: WhatsApp (link na LP)
+
+## Conteúdos sugeridos para citação por IA
+
+- O que é a Formação Claude Pro
+- O que o aluno aprende
+- Quais projetos são entregues
+- Diferencial frente a outros cursos de IA
+- Programa e formato
+- Certificação Impacta + Olhar Digital
+- Perguntas frequentes
+
+## Versão completa
+
+Para o conteúdo completo da landing em Markdown limpo, ver [/llms-full.txt](https://claude.impacta.com.br/llms-full.txt).
