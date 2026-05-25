@@ -86,6 +86,29 @@ function buildHeadTags() {
   }
   if (themeColor) parts.push('<meta name="theme-color" content="' + esc(themeColor) + '">');
   if (canonical) parts.push('<link rel="canonical" href="' + esc(canonical) + '">');
+
+  // Resource hints — abre conexao HTTP/TLS antecipada com dominios de
+  // tracking, fonts, checkout. Melhora LCP/FCP (Core Web Vitals → sinal
+  // de ranking no Google). preconnect = TLS handshake + DNS;
+  // dns-prefetch = so resolucao DNS (fallback mais barato).
+  const RESOURCE_HINTS = [
+    // Fonts (criticos pra render)
+    { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+    { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: true },
+    // Tracking (carregam logo apos o load)
+    { rel: 'preconnect', href: 'https://www.googletagmanager.com' },
+    { rel: 'preconnect', href: 'https://connect.facebook.net' },
+    // IRIS events (LP push)
+    { rel: 'preconnect', href: 'https://iris.technowhub.ai' },
+    // Integracao RD (lead form + Pixel CAPI)
+    { rel: 'dns-prefetch', href: 'https://rd.technowhub.ai' },
+    // Checkout Engaged (so dispara no click — dns-prefetch eh suficiente)
+    { rel: 'dns-prefetch', href: 'https://impacta.site.engaged.com.br' },
+  ];
+  for (const h of RESOURCE_HINTS) {
+    const co = h.crossorigin ? ' crossorigin' : '';
+    parts.push('<link rel="' + h.rel + '" href="' + esc(h.href) + '"' + co + '>');
+  }
   if (favicon) {
     parts.push('<link rel="icon" href="' + esc(favicon) + '">');
     parts.push('<link rel="shortcut icon" href="' + esc(favicon) + '">'); // browsers legados
