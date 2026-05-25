@@ -281,30 +281,79 @@ function buildBlock(template) {
   return MARK_START + '\n' + tags + '\n' + jsonLd + '\n' + MARK_END;
 }
 
-// ─── Wrapper: parseia bundle template, modifica, salva ───────────────────
+// ─── Wrapper ─────────────────────────────────────────────────────────────
+// CRITICO: a LP eh um artifact bundlado do Claude que hidrata via JS.
+// O <head> REAL servido pelo nginx eh minusculo — todo o HTML "de verdade"
+// fica dentro de <script type="__bundler/template"> como JSON string e
+// so vira DOM depois do JS rodar.
+//
+// Crawlers (Google, GSC verifier, FB scraper, LinkedIn) NAO executam JS,
+// entao tags injetadas dentro do bundler template ficam INVISIVEIS pra
+// SEO/social. Por isso este script injeta o bloco SEO DUAS vezes:
+//
+//   1. No <head> ESTATICO real do index.html — onde crawlers leem
+//      (RESOLVE a verificacao do GSC + rich snippets + OG cards)
+//   2. Tambem no bundle template — pra que a versao hidratada tenha
+//      as mesmas tags (browsers de usuarios reais), evitando que o JS
+//      sobrescreva o <head> e remova as tags estaticas
+//
 const html = fs.readFileSync(HTML_PATH, 'utf8');
-const m = html.match(/<script type="__bundler\/template">\s*([\s\S]*?)\s*<\/script>/);
-if (!m) throw new Error('Não encontrei o bundle template no index.html');
-const rawJson = m[1];
-let template = JSON.parse(rawJson);
 
-template = stripExistingSeo(template);
-const block = buildBlock(template);
-if (template.indexOf('</head>') !== -1) {
-  template = template.replace('</head>', block + '\n</head>');
-} else {
-  template = block + template;
+// Extrai FAQ do bundle template (pra montar FAQPage schema) — so leitura
+const m = html.match(/<script type="__bundler\/template">\s*([\s\S]*?)\s*<\/script>/);
+let faqForSchema = [];
+if (m) {
+  try {
+    const tpl = JSON.parse(m[1]);
+    faqForSchema = extractFaq(tpl);
+  } catch {
+    /* template parse falhou — segue sem FAQ */
+  }
 }
 
-const newJson = JSON.stringify(template).replace(/<\/script>/gi, '<\\/script>');
-const newHtml = html.replace(rawJson, () => newJson);
-fs.writeFileSync(HTML_PATH, newHtml);
+// Monta o bloco SEO completo (mesma instancia pra ambos os destinos)
+const seoBlock = (function () {
+  const tags = buildHeadTags();
+  const jsonLd = buildJsonLd(faqForSchema);
+  return MARK_START + '\n' + tags + '\n' + jsonLd + '\n' + MARK_END;
+})();
 
-// Conta o que entrou
-const faq = extractFaq(JSON.parse(newJson));
+// ─── DESTINO 1: <head> ESTATICO real ─────────────────────────────────────
+// Strip versao antiga + insere antes do </head> estatico (primeiro </head>
+// que aparece no HTML servido).
+const staticStripRe = new RegExp(MARK_START + '[\\s\\S]*?' + MARK_END, 'g');
+let workingHtml = html.replace(staticStripRe, '');
+if (!workingHtml.includes('</head>')) {
+  throw new Error('Não encontrei </head> no index.html estatico');
+}
+// Substitui SO o primeiro </head> (o estatico — o do template vem depois,
+// dentro do JSON escapado como "</head>" -> nao casa o pattern bruto).
+workingHtml = workingHtml.replace('</head>', seoBlock + '\n</head>');
+
+// ─── DESTINO 2: <head> dentro do bundle template (hidratacao) ────────────
+const m2 = workingHtml.match(/<script type="__bundler\/template">\s*([\s\S]*?)\s*<\/script>/);
+if (m2) {
+  const rawJson = m2[1];
+  try {
+    let template = JSON.parse(rawJson);
+    template = template.replace(staticStripRe, ''); // strip versao antiga no template
+    if (template.indexOf('</head>') !== -1) {
+      template = template.replace('</head>', seoBlock + '\n</head>');
+    }
+    const newJson = JSON.stringify(template).replace(/<\/script>/gi, '<\\/script>');
+    workingHtml = workingHtml.replace(rawJson, () => newJson);
+  } catch (e) {
+    console.warn('  (aviso: bundle template parse falhou — so o head estatico foi atualizado)');
+  }
+}
+
+fs.writeFileSync(HTML_PATH, workingHtml);
+
 console.log('✓ SEO injetado em index.html');
+console.log('  Destino:       <head> estatico (crawlers) + bundle template (hidratacao)');
 console.log('  Canonical:    ', seo.canonical_url || '(não configurado)');
 console.log('  OG Image:     ', seo.og_image_url || '(não configurado)');
 console.log('  Org Logo:     ', seo.organization?.logo || '(não configurado)');
+console.log('  GSC verify:   ', seo.google_site_verification ? '✓ tag injetada' : '(vazio)');
 console.log('  Course Schema:', seo.course?.name ? 'OK' : '(faltando dados em config.seo.course)');
-console.log('  FAQ items:    ', faq.length);
+console.log('  FAQ items:    ', faqForSchema.length);
