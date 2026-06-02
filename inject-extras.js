@@ -47,7 +47,7 @@ function buildExtrasBlock(c) {
   const bonus          = Number(c.bonus_remaining) || 20;
   const horario        = c.horario_aulas || '19h–22h (Brasília)';
   const horarioAtend   = c.horario_atendimento || '9h–18h dias úteis · sábados 9h–13h';
-  const ticket         = Number(c.ticket_price) || 1499;
+  const ticket         = Number(c.ticket_price) || 2299;
   const waTooltip      = c.whatsapp_tooltip || 'Tira sua dúvida em 2 min';
   const ticketBR       = ticket.toLocaleString('pt-BR');
 
@@ -460,7 +460,7 @@ iframe[src*="megasac"],
       '<button class="lp-sticky-close" aria-label="Fechar">×</button>' +
       '<div class="lp-sticky-bonus">' +
         'Bônus: <strong>' + BONUS_REMAINING + ' primeiros</strong> ganham 1h extra. ' +
-        'Turma <strong>08/06</strong> · ' + HORARIO + ' · <s style="opacity:0.6;margin-right:4px;font-weight:400">R$ 1.800</s> R$ ' + TICKET.toLocaleString('pt-BR') + '.' +
+        'Turma <strong>08/06</strong> · ' + HORARIO + ' · <s style="opacity:0.6;margin-right:4px;font-weight:400">R$ 4.000</s> R$ ' + TICKET.toLocaleString('pt-BR') + '.' +
       '</div>' +
       '<a href="' + checkoutUrlWithUtms() + '" data-track="cta-buy-sticky">Quero me matricular</a>';
     document.body.appendChild(bar);
@@ -590,7 +590,7 @@ iframe[src*="megasac"],
         if (window.gtag && (emailVal || phoneVal)) {
           try {
             gtag('event', 'qualify_lead_enhanced', {
-              currency: 'BRL', value: 1499,
+              currency: 'BRL', value: 2299,
               user_data: {
                 email_address: emailVal || undefined,
                 phone_number:  phoneVal || undefined,

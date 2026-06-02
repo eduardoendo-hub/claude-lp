@@ -13,7 +13,7 @@
   "bonus_remaining": 20,
   "horario_aulas": "19h–22h (Brasília)",
   "horario_atendimento": "9h–18h dias úteis · sábados 9h–13h",
-  "ticket_price": 1499,
+  "ticket_price": 2299,
   "whatsapp_tooltip": "Tira sua dúvida em 2 min",
   "whatsapp_default_message": "Olá! Quero saber mais sobre a Formação Claude Pro.",
 
@@ -49,7 +49,7 @@
       "duration_iso": "P5D",
       "start_date": "2026-06-08T19:00:00-03:00",
       "end_date": "2026-06-12T22:00:00-03:00",
-      "price": 1499,
+      "price": 2299,
       "currency": "BRL",
       "instructor_name": "Cesar Almendra",
       "instructor_bio": "Instrutor sênior de IA aplicada — Impacta + Olhar Digital",

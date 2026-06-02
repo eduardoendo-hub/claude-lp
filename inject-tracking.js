@@ -117,8 +117,8 @@ function buildHelper(cfg) {
     if (!kind) return;
     var label = (el.textContent || '').trim().slice(0, 100);
     if (kind === 'matricular') {
-      track('begin_checkout', {cta_text: label, currency: 'BRL', value: 1499});
-      trackPixel('InitiateCheckout', {content_name: label, currency: 'BRL', value: 1499});
+      track('begin_checkout', {cta_text: label, currency: 'BRL', value: 2299});
+      trackPixel('InitiateCheckout', {content_name: label, currency: 'BRL', value: 2299});
       trackGoogleAdsConversion();
     } else if (kind === 'consultor_open') {
       track('generate_lead', {cta_text: label});

@@ -10,7 +10,7 @@
 
 A Formação Claude Pro: do Cowork ao Code é um curso online ao vivo de 5 dias (das 19h às 22h, horário de Brasília) em que profissionais aprendem a transformar Claude em uma central de execução: analisando documentos, consultando planilhas, criando Skills personalizadas, usando RAG sobre bases internas e construindo agentes autônomos para processos reais de negócio.
 
-A turma atual é **08/06/2026**. Investimento: **R$ 1.499** (à vista) ou parcelado. Certificado conjunto **Impacta + Olhar Digital**.
+A turma atual é **08/06/2026**. Investimento: **R$ 2.299** (à vista) ou parcelado. Certificado conjunto **Impacta + Olhar Digital**.
 
 ## O que o aluno entrega ao final
 

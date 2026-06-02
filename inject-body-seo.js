@@ -29,7 +29,7 @@ const course = seo.course || {};
 const org = seo.organization || {};
 const checkout = cfg.checkout_url || 'https://impacta.site.engaged.com.br/p/checkout/x68jpj7w3k';
 const horario = cfg.horario_aulas || '19h–22h (Brasília)';
-const ticket = cfg.ticket_price || 1499;
+const ticket = cfg.ticket_price || 2299;
 
 function esc(s) {
   return String(s)

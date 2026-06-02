@@ -40,7 +40,7 @@ Eventos seguem o template **"Gerar leads online"** do GA4. Cada evento vai para 
 
 | Evento (GA4)         | Trigger                                                  | Meta Pixel               | Estágio funil           |
 |----------------------|----------------------------------------------------------|--------------------------|-------------------------|
-| `begin_checkout`     | Click em CTAs `.btn--primary`, `.btn--white`, `.bar__cta` (textos "matricular", "garantir vaga") | `InitiateCheckout` (BRL 1499) | Intenção de compra      |
+| `begin_checkout`     | Click em CTAs `.btn--primary`, `.btn--white`, `.bar__cta` (textos "matricular", "garantir vaga") | `InitiateCheckout` (BRL 2299) | Intenção de compra      |
 | `generate_lead`      | Click em `.btn--ghost` ("Falar com um consultor")        | `Lead` (consultor_open)  | Interesse               |
 | `qualify_lead` ⭐    | Submit do form modal `.modal__submit`                    | `Lead` (form_submit)     | Lead qualificado        |
 | `page_view` (auto)   | gtag.js `config`                                         | `PageView`               | Visita                  |
@@ -87,7 +87,7 @@ Configuração no `tracking-config.json`:
 | `campaign_slug`     | `claude-pro-maio-2026` | Slug enviado a integracao-rd para resolver funnel_id/deal_stage_id |
 | `bonus_remaining`   | `20` | Atualize conforme matrículas avançam |
 | `horario_aulas`     | `19h–20h (Brasília)` | Mostrado no sticky bar |
-| `ticket_price`      | `1499` | Mostrado no sticky bar e nos eventos de InitiateCheckout |
+| `ticket_price`      | `2299` | Mostrado no sticky bar e nos eventos de InitiateCheckout |
 | `whatsapp_tooltip`  | `Tira sua dúvida em 2 min` | Texto da bubble sobre o fab WhatsApp |
 
 ## Estrutura
