@@ -29,7 +29,7 @@ const course = seo.course || {};
 const org = seo.organization || {};
 const checkout = cfg.checkout_url || 'https://impacta.site.engaged.com.br/p/checkout/x68jpj7w3k';
 const horario = cfg.horario_aulas || '19h–22h (Brasília)';
-const ticket = cfg.ticket_price || 2299;
+const ticket = cfg.ticket_price || 1699;
 
 function esc(s) {
   return String(s)
@@ -118,7 +118,7 @@ const block = `${MARK_START}
   <main role="main" lang="pt-BR" style="max-width:900px;margin:0 auto;padding:24px;font-family:system-ui,sans-serif;color:#0e0b08;background:#faf9f5;">
     <header>
       <h1>${esc(courseName)}</h1>
-      <p><strong>Curso online ao vivo · ${esc(orgName)} + Olhar Digital · Turma 08/06/2026 · R$ ${ticket.toLocaleString('pt-BR')}</strong></p>
+      <p><strong>Curso online ao vivo · ${esc(orgName)} + Olhar Digital · Turma 06/07/2026 · R$ ${ticket.toLocaleString('pt-BR')}</strong></p>
       <p>${esc(courseDesc)}</p>
     </header>
 
@@ -170,7 +170,7 @@ ${PERSONAS.map(([area, use]) => `        <li><strong>${esc(area)}:</strong> ${es
         <li><strong>Formato:</strong> Online ao vivo (não gravação assíncrona)</li>
         <li><strong>Duração:</strong> 5 dias intensivos · 15h ao vivo</li>
         <li><strong>Horário:</strong> ${esc(horario)}</li>
-        <li><strong>Próxima turma:</strong> 08/06/2026</li>
+        <li><strong>Próxima turma:</strong> 06/07/2026</li>
         <li><strong>Investimento:</strong> R$ ${ticket.toLocaleString('pt-BR')} à vista ou parcelado</li>
         <li><strong>Pré-requisito:</strong> Assinatura Claude Pro ativa</li>
         <li><strong>Certificado:</strong> Conjunto ${esc(orgName)} + Olhar Digital</li>

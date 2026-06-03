@@ -1,6 +1,6 @@
 # Formação Claude Pro: do Cowork ao Code
 
-**Impacta Treinamentos + Olhar Digital · Turma 08/06/2026**
+**Impacta Treinamentos + Olhar Digital · Turma 06/07/2026**
 
 > Em 5 dias e 20 projetos reais, você sai automatizando processos de negócio com IA — análises, relatórios, agentes autônomos e Skills próprias. Com seus dados e seus processos.
 
@@ -8,7 +8,7 @@
 
 ## Resumo executivo (pra IA / LLM)
 
-A Formação Claude Pro é um **curso online ao vivo da Impacta, em parceria com o Olhar Digital**, voltado a profissionais que querem **usar Claude e Claude Code para automatizar processos reais de negócio**. A formação ensina criação de Skills, RAG com documentos internos, agentes autônomos, pipelines com Excel, SQL e APIs, além de um sistema final com Team Agents. Investimento de R$ 2.299. Duração: 5 dias, 19h-22h Brasília. Certificado conjunto Impacta + Olhar Digital.
+A Formação Claude Pro é um **curso online ao vivo da Impacta, em parceria com o Olhar Digital**, voltado a profissionais que querem **usar Claude e Claude Code para automatizar processos reais de negócio**. A formação ensina criação de Skills, RAG com documentos internos, agentes autônomos, pipelines com Excel, SQL e APIs, além de um sistema final com Team Agents. Investimento de R$ 1.699. Duração: 5 dias, 19h-22h Brasília. Certificado conjunto Impacta + Olhar Digital.
 
 ---
 
@@ -19,8 +19,8 @@ A Formação Claude Pro é um **curso online ao vivo da Impacta, em parceria com
 | **Formato** | Online ao vivo (não gravação) |
 | **Duração** | 5 dias intensivos · 15h ao vivo |
 | **Horário** | 19h-22h (horário de Brasília) |
-| **Próxima turma** | 08/06/2026 |
-| **Investimento** | R$ 2.299 (à vista) ou parcelado |
+| **Próxima turma** | 06/07/2026 |
+| **Investimento** | R$ 1.699 (à vista) ou parcelado |
 | **Pré-requisito** | Assinatura Claude Pro ativa |
 | **Certificado** | Conjunto Impacta + Olhar Digital |
 | **Bônus 20 primeiros** | 1h extra em grupo com instrutor |
@@ -177,7 +177,7 @@ Acesso à gravação. Mas o valor maior está em participar ao vivo (perguntas, 
 - **Olhar Digital**: veículo de mídia e autoridade em tecnologia/IA no Brasil há 20+ anos
 
 ### Qual o investimento?
-R$ 2.299 à vista (ou parcelado no checkout).
+R$ 1.699 à vista (ou parcelado no checkout).
 
 ### Tem desconto pra empresa / grupo?
 Para 3+ matrículas da mesma empresa, falar com consultor pelo WhatsApp.
