@@ -384,6 +384,14 @@ iframe[src*="megasac"],
           } catch(e){}
         }
       });
+      // Cupom: ?cupom= (aliases coupon/voucher_code) na URL do anuncio vira
+      // ?voucher_code= no checkout — o Engaged aplica o desconto sozinho.
+      // Persistido na sessao (nao gruda entre sessoes).
+      var cupom = current.get('cupom') || current.get('coupon') || current.get('voucher_code');
+      if (cupom) { try { sessionStorage.setItem('lp_cupom', cupom.trim()); } catch(e){} }
+      else { try { cupom = sessionStorage.getItem('lp_cupom'); } catch(e){} }
+      ['cupom','coupon'].forEach(function(k){ current.delete(k); }); // limpa alias cru
+      if (cupom) current.set('voucher_code', cupom.trim());
       var qs = current.toString();
       return CHECKOUT_URL + (qs ? '?' + qs : '');
     } catch(e) {
