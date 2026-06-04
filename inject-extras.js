@@ -376,7 +376,10 @@ iframe[src*="megasac"],
       KEYS.forEach(function(k){
         if (!current.has(k)) {
           try {
-            var v = localStorage.getItem('lp_' + k);
+            // Respeita o TTL da persistencia (window.__lpReadUtm, do bloco de
+            // tracking). Sem isso, UTM antigo (ex: brevo/email de maio) grudava
+            // no checkout pra sempre, mesmo em visita direta/organica.
+            var v = (typeof window.__lpReadUtm === 'function') ? window.__lpReadUtm(k) : null;
             if (v) current.set(k, v);
           } catch(e){}
         }

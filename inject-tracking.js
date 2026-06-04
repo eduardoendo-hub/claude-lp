@@ -66,14 +66,39 @@ function buildHelper(cfg) {
   return `<script>
 (function(){
   var UTM_KEYS = ['utm_source','utm_medium','utm_campaign','utm_content','utm_term','gclid','fbclid'];
+  var UTM_TTL_MS = 30 * 24 * 60 * 60 * 1000; // 30 dias — atribuicao nao gruda pra sempre
+  // Le um UTM persistido respeitando TTL. Formato atual: {"v":valor,"t":ts}.
+  // Formato legado (string crua, sem timestamp) eh tratado como expirado e
+  // PURGADO — assim UTMs antigos (ex: brevo/email/CLAUDEPRO-MAI26 de um disparo
+  // de carrinho abandonado) param de grudar no checkout de quem entra
+  // direto/organico numa sessao posterior.
+  function lpReadUtm(k){
+    try {
+      var raw = localStorage.getItem('lp_'+k);
+      if (!raw) return null;
+      var obj = JSON.parse(raw); // string crua legada -> throw -> purga no catch
+      if (obj && obj.v && obj.t && (Date.now() - obj.t) < UTM_TTL_MS) return obj.v;
+      localStorage.removeItem('lp_'+k);
+      return null;
+    } catch(e){
+      try { localStorage.removeItem('lp_'+k); } catch(_){}
+      return null;
+    }
+  }
   var p = new URLSearchParams(location.search);
   var utms = {};
   UTM_KEYS.forEach(function(k){
     var v = p.get(k);
-    if (v) { try { localStorage.setItem('lp_'+k, v); } catch(e){} utms[k] = v; }
-    else { try { var s = localStorage.getItem('lp_'+k); if (s) utms[k] = s; } catch(e){} }
+    if (v) {
+      try { localStorage.setItem('lp_'+k, JSON.stringify({v:v, t:Date.now()})); } catch(e){}
+      utms[k] = v;
+    } else {
+      var s = lpReadUtm(k);
+      if (s) utms[k] = s;
+    }
   });
   window.__lp_utms = utms;
+  window.__lpReadUtm = lpReadUtm; // reusado por checkoutUrlWithUtms (inject-extras)
 
   // NOTA: a propagacao de UTMs pros links engaged.com.br ja eh feita pela
   // funcao applyCheckoutUtmsToAllLinks() / checkoutUrlWithUtms() embarcada
