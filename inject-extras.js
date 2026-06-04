@@ -386,10 +386,8 @@ iframe[src*="megasac"],
       });
       // Cupom: ?cupom= (aliases coupon/voucher_code) na URL do anuncio vira
       // ?voucher_code= no checkout — o Engaged aplica o desconto sozinho.
-      // Persistido na sessao (nao gruda entre sessoes).
+      // SO da URL: nao persiste. Entrar direto (sem ?cupom=) nao aplica cupom.
       var cupom = current.get('cupom') || current.get('coupon') || current.get('voucher_code');
-      if (cupom) { try { sessionStorage.setItem('lp_cupom', cupom.trim()); } catch(e){} }
-      else { try { cupom = sessionStorage.getItem('lp_cupom'); } catch(e){} }
       ['cupom','coupon'].forEach(function(k){ current.delete(k); }); // limpa alias cru
       if (cupom) current.set('voucher_code', cupom.trim());
       var qs = current.toString();
