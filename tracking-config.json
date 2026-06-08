@@ -4,7 +4,6 @@
   "google_ads_conversion_id": null,
   "google_ads_conversion_label": null,
   "remove_gtm_id": "GTM-MS25H9LK",
-
   "checkout_url": "https://impacta.site.engaged.com.br/p/checkout/72rspa5wc8",
   "integracao_rd_url": "https://rd.technowhub.ai",
   "iris_url": "https://iris.technowhub.ai",
@@ -16,9 +15,8 @@
   "ticket_price": 1699,
   "whatsapp_tooltip": "Tira sua dúvida em 2 min",
   "whatsapp_default_message": "Olá! Quero saber mais sobre a Formação Claude Pro.",
-
   "seo": {
-    "canonical_url": "https://claude.impacta.com.br/",
+    "canonical_url": "https://www.impacta.com.br/cursos/claude",
     "og_image_url": "https://claude.impacta.com.br/logo-impacta.png",
     "favicon_url": "https://claude.impacta.com.br/favicon.ico",
     "apple_touch_icon_url": "https://claude.impacta.com.br/logo-impacta.png",
@@ -42,7 +40,7 @@
     "course": {
       "name": "Formação Claude Pro: Do Cowork ao Code",
       "description": "Em 5 dias e 20 projetos reais, você sai automatizando processos de negócio com IA — análises, relatórios, agentes autônomos e Skills próprias.",
-      "url": "https://claude.impacta.com.br/",
+      "url": "https://www.impacta.com.br/cursos/claude",
       "course_mode": "online",
       "is_live": true,
       "language": "pt-BR",

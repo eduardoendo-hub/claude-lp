@@ -4,7 +4,7 @@
 
 ## Página principal
 
-- [Formação Claude Pro](https://claude.impacta.com.br/): Landing oficial — programa completo, instrutor, datas, investimento, FAQ e inscrição.
+- [Formação Claude Pro](https://www.impacta.com.br/cursos/claude): Landing oficial — programa completo, instrutor, datas, investimento, FAQ e inscrição.
 
 ## Sobre o curso
 
@@ -86,4 +86,4 @@ Vagas limitadas por turma. Os **20 primeiros** ganham bônus de **1 hora extra**
 
 ## Versão completa
 
-Para o conteúdo completo da landing em Markdown limpo, ver [/llms-full.txt](https://claude.impacta.com.br/llms-full.txt).
+Para o conteúdo completo da landing em Markdown limpo, ver [/llms-full.txt](https://www.impacta.com.br/cursos/claude/llms-full.txt).

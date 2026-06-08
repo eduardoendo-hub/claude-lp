@@ -1,4 +1,4 @@
-# robots.txt — claude.impacta.com.br
+# robots.txt — Claude Pro (host: claude.impacta.com.br/.technowhub.ai · canonical: www.impacta.com.br/cursos/claude)
 # Permite todos os bots por padrao + bloqueia paths tecnicos.
 # Bots de busca generativa (Claude, GPT, Perplexity) sao bem-vindos —
 # decisao estrategica: queremos aparecer em respostas de IA quando alguem
@@ -85,4 +85,4 @@ User-agent: TelegramBot
 Allow: /
 
 # ===== Sitemap =====
-Sitemap: https://claude.impacta.com.br/sitemap.xml
+Sitemap: https://www.impacta.com.br/cursos/claude/sitemap.xml
