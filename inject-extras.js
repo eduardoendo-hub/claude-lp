@@ -40,6 +40,7 @@ const BADGE_ATTR = 'data-lp-extras="probadge"';
 // ─── 1. Bloco CSS+JS injetado antes do </head> ─────────────────────────────
 function buildExtrasBlock(c) {
   const checkout       = c.checkout_url;
+  const turma          = c.turma_id || '';
   const integracaoRd   = c.integracao_rd_url;
   const irisUrl        = c.iris_url || 'https://iris.technowhub.ai';
   const productSlug    = c.product_slug || 'claude-pro';
@@ -352,6 +353,7 @@ iframe[src*="megasac"],
   const js = `
 (function(){
   var CHECKOUT_URL      = ${JSON.stringify(checkout)};
+  var TURMA             = ${JSON.stringify(turma)};
   var INTEGRACAO_RD_URL = ${JSON.stringify(integracaoRd)};
   var IRIS_URL          = ${JSON.stringify(irisUrl)};
   var PRODUCT_SLUG      = ${JSON.stringify(productSlug)};
@@ -372,6 +374,10 @@ iframe[src*="megasac"],
   function checkoutUrlWithUtms(){
     try {
       var current = new URLSearchParams(location.search);
+      // Turma (sistema interno): versiona o checkout mantendo o MESMO link.
+      // Volta no webhook como queryParams.turma e o IRIS resolve a campanha
+      // por impactaTurmaId. Configurado em tracking-config.json (turma_id).
+      if (TURMA && !current.has('turma')) current.set('turma', TURMA);
       var KEYS = ['utm_source','utm_medium','utm_campaign','utm_content','utm_term','gclid','fbclid'];
       KEYS.forEach(function(k){
         if (!current.has(k)) {
