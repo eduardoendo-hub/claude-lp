@@ -27,7 +27,7 @@ const MARK_END = '<!-- LP-BODY-SEO:END -->';
 const seo = cfg.seo || {};
 const course = seo.course || {};
 const org = seo.organization || {};
-const checkout = cfg.checkout_url || 'https://impacta.site.engaged.com.br/p/checkout/72rspa5wc8';
+const checkout = cfg.checkout_url || 'https://impacta.site.engaged.com.br/p/checkout/qnwmjm487q';
 const horario = cfg.horario_aulas || '19h–22h (Brasília)';
 const ticket = cfg.ticket_price || 1699;
 
