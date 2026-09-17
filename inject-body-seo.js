@@ -27,7 +27,11 @@ const MARK_END = '<!-- LP-BODY-SEO:END -->';
 const seo = cfg.seo || {};
 const course = seo.course || {};
 const org = seo.organization || {};
-const checkout = cfg.checkout_url || 'https://impacta.site.engaged.com.br/p/checkout/qnwmjm487q';
+const checkoutBase = cfg.checkout_url || 'https://impacta.site.engaged.com.br/p/checkout/qnwmjm487q';
+const voucher = cfg.voucher_code || '';
+const checkout = voucher
+  ? `${checkoutBase}${checkoutBase.includes('?') ? '&' : '?'}voucher_code=${encodeURIComponent(voucher)}`
+  : checkoutBase;
 const horario = cfg.horario_aulas || '19h–22h (Brasília)';
 const ticket = cfg.ticket_price || 1699;
 
@@ -199,7 +203,7 @@ ${FAQ.map((it) => `      <h3>${esc(it.q)}</h3>\n      <p>${esc(it.a)}</p>`).join
 
     <section>
       <h2>Inscrição</h2>
-      <p>Vagas limitadas por turma. <a href="${esc(checkout)}" rel="noopener">Garanta sua vaga aqui</a>.</p>
+      <p>Vagas limitadas por turma. <a href="${esc(checkout)}" rel="noopener">Garanta sua vaga aqui${voucher ? ` (cupom ${esc(voucher)} já aplicado — 20% off)` : ''}</a>.</p>
       <p>
         Para falar com consultor antes de inscrever, use o botão de WhatsApp na página principal
         (versão hidratada com JavaScript).

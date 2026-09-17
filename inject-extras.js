@@ -49,6 +49,7 @@ function buildExtrasBlock(c) {
   const horario        = c.horario_aulas || '19h–22h (Brasília)';
   const horarioAtend   = c.horario_atendimento || '9h–18h dias úteis · sábados 9h–13h';
   const ticket         = Number(c.ticket_price) || 1699;
+  const voucherCode    = c.voucher_code || '';
   const waTooltip      = c.whatsapp_tooltip || 'Tira sua dúvida em 2 min';
   const ticketBR       = ticket.toLocaleString('pt-BR');
 
@@ -393,6 +394,7 @@ iframe[src*="megasac"],
   var BONUS_REMAINING   = ${bonus};
   var HORARIO           = ${JSON.stringify(horario)};
   var TICKET            = ${ticket};
+  var VOUCHER_CODE      = ${JSON.stringify(voucherCode)};
   var WA_TOOLTIP        = ${JSON.stringify(waTooltip)};
 
   function utms(){ try { return (window.__lp_utms || {}); } catch(e){ return {}; } }
@@ -424,8 +426,10 @@ iframe[src*="megasac"],
       });
       // Cupom: ?cupom= (aliases coupon/voucher_code) na URL do anuncio vira
       // ?voucher_code= no checkout — o Engaged aplica o desconto sozinho.
-      // SO da URL: nao persiste. Entrar direto (sem ?cupom=) nao aplica cupom.
-      var cupom = current.get('cupom') || current.get('coupon') || current.get('voucher_code');
+      // Prioridade: querystring do anuncio > VOUCHER_CODE default do config
+      // (tracking-config.json). Assim visita direta/organica tambem leva o
+      // cupom da campanha vigente sem depender do usuario copiar/colar.
+      var cupom = current.get('cupom') || current.get('coupon') || current.get('voucher_code') || VOUCHER_CODE || '';
       ['cupom','coupon'].forEach(function(k){ current.delete(k); }); // limpa alias cru
       if (cupom) current.set('voucher_code', cupom.trim());
       var qs = current.toString();
