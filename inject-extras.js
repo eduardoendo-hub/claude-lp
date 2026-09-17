@@ -841,9 +841,9 @@ iframe[src*="megasac"],
     var banner = document.createElement('div');
     banner.className = 'lp-top-banner';
     banner.innerHTML =
-      '<span>🎁 <b>Bônus</b> dos primeiros ' + BONUS_REMAINING + ' inscritos: <b>1h extra</b> em grupo com o instrutor</span>' +
+      '<span>⏰ <b>Por tempo limitado</b> — use o cupom <b>CLAUDE20</b> e ganhe <b>20% de desconto</b></span>' +
       '<span class="lp-top-banner__sep">·</span>' +
-      '<a href="' + checkoutUrlWithUtms() + '" data-track="cta-buy-banner">Garantir minha vaga</a>';
+      '<a href="' + checkoutUrlWithUtms() + '" data-track="cta-buy-banner-cupom">Garantir minha vaga</a>';
     if (document.body.firstChild) {
       document.body.insertBefore(banner, document.body.firstChild);
     } else {
