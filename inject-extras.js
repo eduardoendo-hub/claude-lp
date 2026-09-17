@@ -263,41 +263,73 @@ function buildExtrasBlock(c) {
   max-width: 220px;
 }
 
-/* ===== Banner topo do hero — bonus dos 20 primeiros (SOLIDO) ===== */
+/* ===== Banner topo — CUPOM CLAUDE20 (DESTAQUE animado) ===== */
 .lp-top-banner {
   position: relative;
   z-index: 8800;
-  background: #1a1411;
-  border-bottom: 2px solid #D97757;
-  color: #F7F1E8;
-  padding: 10px 16px;
+  background: linear-gradient(90deg, #D97757 0%, #F4A261 25%, #F5C674 50%, #F4A261 75%, #D97757 100%);
+  background-size: 200% 100%;
+  animation: lpTopBannerShine 5s linear infinite;
+  border-bottom: 2px solid #0e0b08;
+  color: #0e0b08;
+  padding: 12px 16px;
   text-align: center;
-  font: 600 13px/1.4 'Inter', -apple-system, sans-serif;
+  font: 700 14px/1.4 'Inter', -apple-system, sans-serif;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 14px;
+  gap: 12px;
   flex-wrap: wrap;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  box-shadow: 0 3px 12px rgba(217,119,87,0.35);
 }
-.lp-top-banner b { color: #D97757; font-weight: 800; }
-.lp-top-banner__sep { opacity: 0.4; }
+@keyframes lpTopBannerShine {
+  0%   { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+.lp-top-banner b { color: #0e0b08; font-weight: 900; }
+.lp-top-banner__sep { opacity: 0.35; color: #0e0b08; }
+.lp-top-banner__code {
+  display: inline-block;
+  background: #0e0b08;
+  color: #F5C674;
+  padding: 3px 10px;
+  border-radius: 5px;
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  margin: 0 3px;
+  animation: lpTopBannerCodePulse 1.8s ease-in-out infinite;
+  box-shadow: 0 0 0 0 rgba(14,11,8,0.5);
+}
+@keyframes lpTopBannerCodePulse {
+  0%, 100% { transform: scale(1);    box-shadow: 0 0 0 0 rgba(14,11,8,0.5); }
+  50%      { transform: scale(1.06); box-shadow: 0 0 0 6px rgba(14,11,8,0);   }
+}
 .lp-top-banner a {
-  color: #0e0b08;
-  background: #D97757;
-  padding: 6px 12px;
+  color: #F7F1E8;
+  background: #0e0b08;
+  padding: 7px 14px;
   border-radius: 6px;
   text-decoration: none;
-  font-weight: 700;
-  font-size: 12px;
+  font-weight: 800;
+  font-size: 13px;
   white-space: nowrap;
-  transition: transform .15s;
+  transition: transform .15s, box-shadow .15s;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
 }
-.lp-top-banner a:hover { transform: translateY(-1px); }
+.lp-top-banner a:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.35);
+}
 @media (max-width: 600px) {
-  .lp-top-banner { font-size: 11px; padding: 8px 12px; }
+  .lp-top-banner { font-size: 12px; padding: 10px 12px; gap: 8px; }
   .lp-top-banner__sep { display: none; }
-  .lp-top-banner a { padding: 5px 10px; font-size: 11px; }
+  .lp-top-banner a { padding: 6px 12px; font-size: 12px; }
+  .lp-top-banner__code { padding: 2px 8px; font-size: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lp-top-banner { animation: none; }
+  .lp-top-banner__code { animation: none; }
 }
 
 /* ===== cta-form-* rebaixado pra ghost (UX: hierarquia) =====
@@ -841,7 +873,7 @@ iframe[src*="megasac"],
     var banner = document.createElement('div');
     banner.className = 'lp-top-banner';
     banner.innerHTML =
-      '<span>⏰ <b>Por tempo limitado</b> — use o cupom <b>CLAUDE20</b> e ganhe <b>20% de desconto</b></span>' +
+      '<span>⏰ <b>Por tempo limitado</b> — use o cupom <span class="lp-top-banner__code">CLAUDE20</span> e ganhe <b>20% de desconto</b></span>' +
       '<span class="lp-top-banner__sep">·</span>' +
       '<a href="' + checkoutUrlWithUtms() + '" data-track="cta-buy-banner-cupom">Garantir minha vaga</a>';
     if (document.body.firstChild) {
