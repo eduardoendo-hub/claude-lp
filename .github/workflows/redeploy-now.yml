@@ -22,7 +22,7 @@ jobs:
             exit 1
           fi
           http_code=$(curl -sS -o /tmp/out -w "%{http_code}" \
-            -X GET "$WEBHOOK_URL" \
+            -X POST "$WEBHOOK_URL" \
             -H "Authorization: Bearer $COOLIFY_TOKEN" \
             -H "Accept: application/json")
           echo "HTTP $http_code"
