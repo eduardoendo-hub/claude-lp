@@ -1,7 +1,7 @@
 name: Redeploy LP (manual)
 
-# Dispara redeploy da LP no Coolify sob demanda. Testa variantes do
-# endpoint ate achar qual a versao instalada responde.
+# Dispara redeploy da LP via Deploy Webhook do Coolify sob demanda.
+# Serve de "botao de panico" quando o webhook GitHub-Coolify esta travado.
 
 on:
   workflow_dispatch: {}
@@ -10,49 +10,22 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Diagnostico + deploy no Coolify
+      - name: Trigger Coolify deploy
         env:
-          COOLIFY_URL:      ${{ secrets.COOLIFY_URL }}
-          COOLIFY_TOKEN:    ${{ secrets.COOLIFY_TOKEN }}
-          COOLIFY_APP_UUID: ${{ secrets.COOLIFY_APP_UUID_LP }}
+          WEBHOOK_URL: ${{ secrets.COOLIFY_DEPLOY_WEBHOOK_LP }}
         run: |
-          set -u
-          if [ -z "$COOLIFY_URL" ] || [ -z "$COOLIFY_TOKEN" ] || [ -z "$COOLIFY_APP_UUID" ]; then
-            echo "Faltam secrets"
+          set -euo pipefail
+          if [ -z "${WEBHOOK_URL:-}" ]; then
+            echo "secret COOLIFY_DEPLOY_WEBHOOK_LP nao setado"
             exit 1
           fi
-
-          AUTH="Authorization: Bearer $COOLIFY_TOKEN"
-          AC="Accept: application/json"
-          CT="Content-Type: application/json"
-
-          probe() {
-            local label="$1" method="$2" url="$3" body="${4:-}"
-            echo ""
-            echo "────────── $label ──────────"
-            echo "$method $url"
-            if [ -n "$body" ]; then
-              code=$(curl -sS -o /tmp/out -w "%{http_code}" -X "$method" "$url" -H "$AUTH" -H "$AC" -H "$CT" -d "$body")
-            else
-              code=$(curl -sS -o /tmp/out -w "%{http_code}" -X "$method" "$url" -H "$AUTH" -H "$AC")
-            fi
-            echo "HTTP $code"
-            head -c 500 /tmp/out
-            echo ""
-          }
-
-          # 1. Confirma que o token funciona
-          probe "token-check /api/v1/version" GET "$COOLIFY_URL/api/v1/version"
-
-          # 2. Lista apps (confirma UUID)
-          probe "listar apps /api/v1/applications" GET "$COOLIFY_URL/api/v1/applications"
-
-          # 3. Variantes do endpoint de deploy
-          probe "GET  /api/v1/deploy?uuid=" GET "$COOLIFY_URL/api/v1/deploy?uuid=$COOLIFY_APP_UUID&force=false"
-          probe "POST /api/v1/deploy body" POST "$COOLIFY_URL/api/v1/deploy" "{\"uuid\":\"$COOLIFY_APP_UUID\",\"force\":false}"
-          probe "POST /api/v1/applications/{uuid}/deploy" POST "$COOLIFY_URL/api/v1/applications/$COOLIFY_APP_UUID/deploy"
-          probe "GET  /api/v1/applications/{uuid}/deploy" GET "$COOLIFY_URL/api/v1/applications/$COOLIFY_APP_UUID/deploy"
-          probe "POST /api/v1/deployments" POST "$COOLIFY_URL/api/v1/deployments" "{\"application_uuid\":\"$COOLIFY_APP_UUID\"}"
-
-          echo ""
-          echo "Fim do diagnostico. Olhe qual variante retornou 2xx."
+          http_code=$(curl -sS -o /tmp/out -w "%{http_code}" "$WEBHOOK_URL")
+          echo "HTTP $http_code"
+          echo "--- body ---"
+          cat /tmp/out
+          echo
+          echo "--- /body ---"
+          case "$http_code" in
+            2??) echo "✓ deploy disparado — veja o build no Coolify" ;;
+            *)   echo "✗ falhou"; exit 1 ;;
+          esac

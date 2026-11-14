@@ -23,7 +23,5 @@ jobs:
 
       - uses: eduardoendo-hub/lp-automation/.github/actions/campaign-switch@main
         with:
-          switch-script: scripts/campaign-switch.mjs
-          coolify-url:   ${{ secrets.COOLIFY_URL }}
-          coolify-token: ${{ secrets.COOLIFY_TOKEN }}
-          coolify-uuid:  ${{ secrets.COOLIFY_APP_UUID_LP }}
+          switch-script:          scripts/campaign-switch.mjs
+          coolify-deploy-webhook: ${{ secrets.COOLIFY_DEPLOY_WEBHOOK_LP }}
