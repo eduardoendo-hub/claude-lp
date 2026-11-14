@@ -1,0 +1,49 @@
+name: Auto-deploy ao push
+
+# Dispara deploy no Coolify em todo push pro main. Resolve o webhook
+# GitHub→Coolify que esta travado neste repo desde set/2026. Mesma
+# chamada API usada pelo campaign-switch.yml.
+#
+# Se um dia o webhook voltar a funcionar, basta desligar esse workflow
+# (comentar o on: push) — o webhook nativo volta a assumir.
+
+on:
+  push:
+    branches: [main]
+    # Nao redeploya quando so mexer em CI, docs ou o proprio schedule
+    # (o switch-automatico ja dispara o deploy no fluxo dele).
+    paths-ignore:
+      - '.github/**'
+      - 'README.md'
+      - 'campaigns-schedule.json'
+      - 'scripts/**'
+
+concurrency:
+  group: coolify-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Coolify deploy
+        env:
+          DEPLOY_URL: ${{ secrets.COOLIFY_DEPLOY_WEBHOOK_LP }}
+          TOKEN:      ${{ secrets.COOLIFY_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${DEPLOY_URL:-}" ] || [ -z "${TOKEN:-}" ]; then
+            echo "secrets Coolify ausentes — pulando."
+            exit 0
+          fi
+          http_code=$(curl -sS -o /tmp/out -w "%{http_code}" \
+            -X POST "$DEPLOY_URL" \
+            -H "Authorization: Bearer $TOKEN" \
+            -H "Accept: application/json")
+          echo "HTTP $http_code"
+          head -c 400 /tmp/out || true
+          echo
+          case "$http_code" in
+            2??) echo "✓ deploy disparado" ;;
+            *)   echo "✗ falhou"; exit 1 ;;
+          esac
