@@ -1,0 +1,38 @@
+name: Redeploy LP (manual)
+
+# Dispara redeploy da LP no Coolify sob demanda, sem precisar de commit novo.
+# Usa os mesmos secrets do campaign-switch.yml.
+#
+# Tambem serve como "botao de panico" quando o webhook Coolify-GitHub trava.
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Coolify deploy
+        env:
+          COOLIFY_URL:      ${{ secrets.COOLIFY_URL }}
+          COOLIFY_TOKEN:    ${{ secrets.COOLIFY_TOKEN }}
+          COOLIFY_APP_UUID: ${{ secrets.COOLIFY_APP_UUID_LP }}
+        run: |
+          set -euo pipefail
+          if [ -z "$COOLIFY_URL" ] || [ -z "$COOLIFY_TOKEN" ] || [ -z "$COOLIFY_APP_UUID" ]; then
+            echo "Faltam secrets: COOLIFY_URL, COOLIFY_TOKEN ou COOLIFY_APP_UUID_LP"
+            exit 1
+          fi
+          echo "POST $COOLIFY_URL/api/v1/deploy?uuid=$COOLIFY_APP_UUID"
+          http_code=$(curl -sS -o /tmp/out -w "%{http_code}" \
+            -X GET "$COOLIFY_URL/api/v1/deploy?uuid=$COOLIFY_APP_UUID&force=false" \
+            -H "Authorization: Bearer $COOLIFY_TOKEN")
+          echo "HTTP $http_code"
+          echo "--- body ---"
+          cat /tmp/out
+          echo
+          echo "--- /body ---"
+          case "$http_code" in
+            2??) echo "✓ deploy disparado — abra o Coolify pra ver o build rodando" ;;
+            *)   echo "✗ falhou"; exit 1 ;;
+          esac
