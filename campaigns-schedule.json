@@ -1,0 +1,23 @@
+{
+  "_doc": "Switches futuros de turma na LP. 'switch_date' em America/Sao_Paulo. O workflow .github/workflows/campaign-switch.yml roda 00:05 BRT todo dia; se achar um switch pra hoje, aplica e remove da lista. Datas de inicio/fim em ISO (YYYY-MM-DD). Script le o estado atual (checkout, turma_id, slug, datas) de tracking-config.json pra montar as substituicoes — nao precisa listar o valor antigo aqui.",
+  "switches": [
+    {
+      "switch_date": "2026-11-28",
+      "label": "Turma 7 — Dezembro/2026 (14–18/12)",
+      "checkout_sharedid": "pme7mgmva3",
+      "turma_id": "175715",
+      "campaign_slug": "claude-pro-dezembro-2026",
+      "start_date": "2026-12-14",
+      "end_date": "2026-12-18"
+    },
+    {
+      "switch_date": "2026-12-19",
+      "label": "Turma 8 — Janeiro/2027 (11–15/01)",
+      "checkout_sharedid": "dmwpssa6l5",
+      "turma_id": "175460",
+      "campaign_slug": "claude-pro-janeiro-2027",
+      "start_date": "2027-01-11",
+      "end_date": "2027-01-15"
+    }
+  ]
+}
