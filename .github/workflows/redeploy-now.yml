@@ -1,7 +1,6 @@
 name: Redeploy LP (manual)
 
-# Dispara redeploy da LP via Deploy Webhook do Coolify sob demanda.
-# Serve de "botao de panico" quando o webhook GitHub-Coolify esta travado.
+# Diagnostico + deploy do webhook. Tenta: (1) webhook puro, (2) webhook + Bearer.
 
 on:
   workflow_dispatch: {}
@@ -10,22 +9,47 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger Coolify deploy
+      - name: Diagnostico webhook Coolify
         env:
-          WEBHOOK_URL: ${{ secrets.COOLIFY_DEPLOY_WEBHOOK_LP }}
+          WEBHOOK_URL:   ${{ secrets.COOLIFY_DEPLOY_WEBHOOK_LP }}
+          COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
         run: |
-          set -euo pipefail
+          set -u
           if [ -z "${WEBHOOK_URL:-}" ]; then
-            echo "secret COOLIFY_DEPLOY_WEBHOOK_LP nao setado"
+            echo "secret COOLIFY_DEPLOY_WEBHOOK_LP ausente"
             exit 1
           fi
-          http_code=$(curl -sS -o /tmp/out -w "%{http_code}" "$WEBHOOK_URL")
-          echo "HTTP $http_code"
-          echo "--- body ---"
-          cat /tmp/out
-          echo
-          echo "--- /body ---"
-          case "$http_code" in
-            2??) echo "✓ deploy disparado — veja o build no Coolify" ;;
-            *)   echo "✗ falhou"; exit 1 ;;
-          esac
+
+          # Mostra a forma da URL sem vazar o segredo (so tamanho + ultimos 8 chars)
+          len=${#WEBHOOK_URL}
+          tail8=$(echo -n "$WEBHOOK_URL" | tail -c 8)
+          echo "WEBHOOK_URL: ${len} chars, termina em ...${tail8}"
+          [ -n "${COOLIFY_TOKEN:-}" ] && echo "COOLIFY_TOKEN: presente" || echo "COOLIFY_TOKEN: ausente"
+
+          probe() {
+            local label="$1"; shift
+            echo ""
+            echo "── $label ──"
+            code=$(curl -sS -o /tmp/out -w "%{http_code}" "$@")
+            echo "HTTP $code"
+            echo "body (até 400 chars):"
+            head -c 400 /tmp/out || true
+            echo
+            echo "headers:"
+            curl -sSI -o /dev/null -w "" "$@" > /tmp/hdr 2>&1 || true
+            # Headers via -I tentativa; se nao ajudar, segue
+          }
+
+          # 1. GET puro
+          probe "1) GET sem auth" -X GET "$WEBHOOK_URL"
+          # 2. POST puro
+          probe "2) POST sem auth" -X POST "$WEBHOOK_URL"
+          # 3. GET com Bearer
+          if [ -n "${COOLIFY_TOKEN:-}" ]; then
+            probe "3) GET com Bearer" -X GET "$WEBHOOK_URL" -H "Authorization: Bearer $COOLIFY_TOKEN"
+            probe "4) POST com Bearer" -X POST "$WEBHOOK_URL" -H "Authorization: Bearer $COOLIFY_TOKEN"
+          else
+            echo "pulando testes com Bearer (COOLIFY_TOKEN ausente)"
+          fi
+          echo ""
+          echo "fim do diagnostico"
