@@ -1,11 +1,9 @@
 name: Campaign switch
 
 # Roda diariamente 00:05 BRT (= 03:05 UTC, UTC-3 sem DST).
-# Se houver um switch agendado pra hoje em campaigns-schedule.json,
-# o script aplica as substituicoes, commita, pusha e dispara o
-# redeploy no Coolify.
-#
-# Tambem pode ser executado manualmente em Actions > Campaign switch > Run.
+# Se houver switch em campaigns-schedule.json pra hoje, aplica via
+# scripts/campaign-switch.mjs. Motor (commit + push + redeploy Coolify)
+# vive em eduardoendo-hub/lp-automation (composite action).
 
 on:
   schedule:
@@ -19,50 +17,13 @@ jobs:
   switch:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          # Token default com contents:write permite commit+push no proprio repo.
-          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: eduardoendo-hub/lp-automation/.github/actions/campaign-switch@main
         with:
-          node-version: '20'
-
-      # Guarda o HEAD atual pra saber se o script commitou algo
-      - name: Pre-switch HEAD
-        id: pre
-        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
-
-      - name: Aplica switch do dia (se houver)
-        run: node scripts/campaign-switch.mjs
-
-      - name: Post-switch HEAD
-        id: post
-        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
-
-      # So dispara deploy no Coolify se:
-      #   1. O script criou um commit novo (SHA mudou)
-      #   2. Os 3 secrets do Coolify estao setados
-      # Se os secrets nao existem, pula silenciosamente — o commit ja esta
-      # no main, mas o rebuild precisara ser manual no dashboard do Coolify.
-      - name: Dispara deploy no Coolify (opcional)
-        if: steps.pre.outputs.sha != steps.post.outputs.sha && env.COOLIFY_TOKEN != '' && env.COOLIFY_URL != '' && env.COOLIFY_APP_UUID != ''
-        env:
-          COOLIFY_URL:      ${{ secrets.COOLIFY_URL }}
-          COOLIFY_TOKEN:    ${{ secrets.COOLIFY_TOKEN }}
-          COOLIFY_APP_UUID: ${{ secrets.COOLIFY_APP_UUID_LP }}
-        run: |
-          set -euo pipefail
-          echo "Disparando redeploy em $COOLIFY_URL para app $COOLIFY_APP_UUID"
-          http_code=$(curl -sS -o /tmp/coolify.out -w "%{http_code}" \
-            -X GET "$COOLIFY_URL/api/v1/deploy?uuid=$COOLIFY_APP_UUID&force=false" \
-            -H "Authorization: Bearer $COOLIFY_TOKEN")
-          echo "HTTP $http_code"
-          cat /tmp/coolify.out
-          case "$http_code" in
-            2??) echo "deploy disparado." ;;
-            *)   echo "falhou — rebuild manual no Coolify."; exit 1 ;;
-          esac
+          switch-script: scripts/campaign-switch.mjs
+          coolify-url:   ${{ secrets.COOLIFY_URL }}
+          coolify-token: ${{ secrets.COOLIFY_TOKEN }}
+          coolify-uuid:  ${{ secrets.COOLIFY_APP_UUID_LP }}
